@@ -6,8 +6,8 @@ namespace Hazel {
 	class HAZEL_API Application
 	{
 	public:
-		//Application();
-		//virtual ~Application();
+		Application();
+		virtual ~Application();
 
 		void Print();
 		void Run();
