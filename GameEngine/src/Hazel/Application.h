@@ -9,7 +9,6 @@ namespace Hazel {
 		Application();
 		virtual ~Application();
 
-		void Print();
 		void Run();
 	};
 
