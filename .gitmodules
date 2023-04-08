@@ -1,6 +1,6 @@
-[submodule "GameEngine/vendor/spdlog"]
-	path = GameEngine/vendor/spdlog
-	url = git@github.com:gabime/spdlog.git
 [submodule "Scotch/vendor/GLFW"]
 	path = Scotch/vendor/GLFW
 	url = git@github.com:TheCherno/glfw.git
+[submodule "Scotch/vendor/spdlog"]
+	path = Scotch/vendor/spdlog
+	url = git@github.com:gabime/spdlog.git
