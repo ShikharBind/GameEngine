@@ -3,6 +3,7 @@
 //For use by applications
 
 #include "Scotch/Application.h"
+#include "Scotch/Layer.h"
 #include "Scotch/Log.h"
 
 // ------ Entry Point --------------

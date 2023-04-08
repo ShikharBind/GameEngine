@@ -14,11 +14,15 @@ outputdir= "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- Include directories related to root folder (solution directory)
 IncludeDir = {}
 IncludeDir["GLFW"] = "Scotch/vendor/GLFW/include"
+IncludeDir["Glad"] = "Scotch/vendor/Glad/include"
+IncludeDir["ImGui"] = "Scotch/vendor/imgui"
 
 include "Scotch/vendor/GLFW"
     filter "system:windows"
-        buildoptions { "-std=c11", "-lgdi32" }
         staticruntime "On"
+
+include "Scotch/vendor/Glad"
+include "Scotch/vendor/imgui"
 
 
 project "Scotch"
@@ -42,24 +46,29 @@ project "Scotch"
     {
         "%{prj.name}/src",
         "%{prj.name}/vendor/spdlog/include",
-        "%{IncludeDir.GLFW}"
+        "%{IncludeDir.GLFW}",
+        "%{IncludeDir.Glad}",
+        "%{IncludeDir.ImGui}"
     }
 
     links
     {
         "GLFW",
+        "Glad",
+        "ImGui",
         "opengl32.lib",
     }
 
     filter "system:windows"
         cppdialect "C++17"
-        staticruntime "On"
+        staticruntime "off"
         systemversion "latest"
 
         defines
         {
             "SH_PLATFORM_WINDOWS",
-            "SH_BUILD_DLL"
+            "SH_BUILD_DLL",
+            "GLFW_INCLUDE_NONE"
         }
 
         postbuildcommands
@@ -69,14 +78,17 @@ project "Scotch"
 
     filter "configurations:Debug"
         defines "SH_DEBUG"
+        runtime "Debug"
         symbols "On"
 
     filter "configurations:Release"
         defines "SH_RELEASE"
+        runtime "Release"
         optimize "On"
 
     filter "configurations:Dist"
         defines "SH_DIST"
+        runtime "Release"
         optimize "On"
 
 
@@ -107,7 +119,7 @@ project "Sandbox"
 
     filter "system:windows"
         cppdialect "C++17"
-        staticruntime "On"
+        staticruntime "off"
         systemversion "latest"
 
         defines
@@ -115,14 +127,17 @@ project "Sandbox"
             "SH_PLATFORM_WINDOWS"
         }
 
-    filter "configurations:Debug"
-        defines "SH_DEBUG"
-        symbols "On"
-
-    filter "configurations:Release"
-        defines "SH_RELEASE"
-        optimize "On"
-
-    filter "configurations:Dist"
-        defines "SH_DIST"
-        optimize "On"
+        filter "configurations:Debug"
+            defines "SH_DEBUG"
+            runtime "Debug"
+            symbols "On"
+    
+        filter "configurations:Release"
+            defines "SH_RELEASE"
+            runtime "Release"
+            optimize "On"
+    
+        filter "configurations:Dist"
+            defines "SH_DIST"
+            runtime "Release"
+            optimize "On"

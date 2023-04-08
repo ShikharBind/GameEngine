@@ -4,3 +4,6 @@
 [submodule "Scotch/vendor/spdlog"]
 	path = Scotch/vendor/spdlog
 	url = git@github.com:gabime/spdlog.git
+[submodule "Scotch/vendor/imgui"]
+	path = Scotch/vendor/imgui
+	url = git@github.com:TheCherno/imgui.git
