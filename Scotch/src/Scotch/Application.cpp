@@ -2,7 +2,6 @@
 #include "Application.h"
 
 #include "Scotch/Events/ApplicationEvent.h"
-#include "Log.h"
 
 #include <GLFW/glfw3.h>
 

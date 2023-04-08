@@ -16,6 +16,10 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Scotch/vendor/GLFW/include"
 
 include "Scotch/vendor/GLFW"
+    filter "system:windows"
+        buildoptions { "-std=c11", "-lgdi32" }
+        staticruntime "On"
+
 
 project "Scotch"
     location "Scotch"
