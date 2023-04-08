@@ -1,4 +1,4 @@
-workspace "GameEngine"
+workspace "Scotch"
     architecture "x64"
     startproject "Sandbox"
 
@@ -11,14 +11,22 @@ workspace "GameEngine"
 
 outputdir= "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+-- Include directories related to root folder (solution directory)
+IncludeDir = {}
+IncludeDir["GLFW"] = "Scotch/vendor/GLFW/include"
 
-project "GameEngine"
-    location "GameEngine"
+include "Scotch/vendor/GLFW"
+
+project "Scotch"
+    location "Scotch"
     kind "SharedLib"
     language "C++"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+    pchheader "shpch.h"
+    pchsource "Scotch/src/shpch.cpp"
 
     files
     {
@@ -28,17 +36,26 @@ project "GameEngine"
 
     includedirs 
     {
-        "%{prj.name}/vendor/spdlog/include"
+        "%{prj.name}/src",
+        "%{prj.name}/vendor/spdlog/include",
+        "%{IncludeDir.GLFW}"
+    }
+
+    links
+    {
+        "GLFW",
+        "opengl32.lib",
     }
 
     filter "system:windows"
         cppdialect "C++17"
         staticruntime "On"
+        systemversion "latest"
 
         defines
         {
-            "HZ_PLATFORM_WINDOWS",
-            "HZ_BUILD_DLL"
+            "SH_PLATFORM_WINDOWS",
+            "SH_BUILD_DLL"
         }
 
         postbuildcommands
@@ -47,15 +64,15 @@ project "GameEngine"
         }
 
     filter "configurations:Debug"
-        defines "HZ_DEBUG"
+        defines "SH_DEBUG"
         symbols "On"
 
     filter "configurations:Release"
-        defines "HZ_RELEASE"
+        defines "SH_RELEASE"
         optimize "On"
 
     filter "configurations:Dist"
-        defines "HZ_DIST"
+        defines "SH_DIST"
         optimize "On"
 
 
@@ -75,32 +92,33 @@ project "Sandbox"
 
     includedirs 
     {
-        "GameEngine/vendor/spdlog/include",
-        "GameEngine/src"
+        "Scotch/vendor/spdlog/include",
+        "Scotch/src"
     }
 
     links 
     {
-        "GameEngine"
+        "Scotch"
     }
 
     filter "system:windows"
         cppdialect "C++17"
         staticruntime "On"
+        systemversion "latest"
 
         defines
         {
-            "HZ_PLATFORM_WINDOWS"
+            "SH_PLATFORM_WINDOWS"
         }
 
     filter "configurations:Debug"
-        defines "HZ_DEBUG"
+        defines "SH_DEBUG"
         symbols "On"
 
     filter "configurations:Release"
-        defines "HZ_RELEASE"
+        defines "SH_RELEASE"
         optimize "On"
 
     filter "configurations:Dist"
-        defines "HZ_DIST"
+        defines "SH_DIST"
         optimize "On"
