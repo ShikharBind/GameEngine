@@ -1,7 +1,7 @@
-#include <GameEngine.h>
+#include <Scotch.h>
 
 
-class Sandbox : public Hazel::Application
+class Sandbox : public Scotch::Application
 {
 public:
 	Sandbox()
@@ -15,7 +15,7 @@ public:
 	}
 };
 
-Hazel::Application* Hazel::CreateApplication()
+Scotch::Application* Scotch::CreateApplication()
 {
 	return new Sandbox();
 }
