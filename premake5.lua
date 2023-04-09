@@ -29,6 +29,7 @@ project "Scotch"
     location "Scotch"
     kind "SharedLib"
     language "C++"
+    staticruntime "off"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -61,7 +62,6 @@ project "Scotch"
 
     filter "system:windows"
         cppdialect "C++17"
-        staticruntime "off"
         systemversion "latest"
 
         defines
@@ -96,6 +96,7 @@ project "Sandbox"
     location "Sandbox"
     kind "ConsoleApp"
     language "C++"
+    staticruntime "off"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -119,7 +120,6 @@ project "Sandbox"
 
     filter "system:windows"
         cppdialect "C++17"
-        staticruntime "off"
         systemversion "latest"
 
         defines
