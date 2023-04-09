@@ -20,7 +20,7 @@ namespace Scotch {
 			return ss.str();
 		}
 
-		EVENT_CLASS_TYPE(KeyPressed)
+		EVENT_CLASS_TYPE(MouseMoved)
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 
 	private:
@@ -44,7 +44,7 @@ namespace Scotch {
 			return ss.str();
 		}
 
-		EVENT_CLASS_TYPE(KeyPressed)
+		EVENT_CLASS_TYPE(MouseScrolled)
 			EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 
 	private:
@@ -78,7 +78,7 @@ namespace Scotch {
 			return ss.str();
 		}
 
-		EVENT_CLASS_TYPE(KeyPressed)
+		EVENT_CLASS_TYPE(MouseButtonPressed)
 	};
 
 	class SCOTCH_API MouseButtonReleasedEvent : public MouseButtonEvent
@@ -94,6 +94,6 @@ namespace Scotch {
 			return ss.str();
 		}
 
-		EVENT_CLASS_TYPE(KeyPressed)
+		EVENT_CLASS_TYPE(MouseButtonReleased)
 	};
 }

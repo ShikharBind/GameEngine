@@ -6,6 +6,8 @@
 #include "Scotch/Layer.h"
 #include "Scotch/Log.h"
 
+#include "Scotch/ImGui/ImGuiLayer.h"
+
 // ------ Entry Point --------------
 #include "Scotch/EntryPoint.h"
 // ---------------------------------

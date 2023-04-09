@@ -8,7 +8,7 @@ public:
 
 	void OnUpdate() override
 	{
-		SH_INFO("ExampleLayer::Update");
+		//SH_INFO("ExampleLayer::Update");
 	}
 
 	void OnEvent(Scotch::Event& event) override
@@ -23,6 +23,7 @@ public:
 	Sandbox()
 	{
 		PushLayer(new ExampleLayer());
+		PushOverlay(new Scotch::ImGuiLayer());
 	}
 
 	~Sandbox() 
