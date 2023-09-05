@@ -16,6 +16,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Scotch/vendor/GLFW/include"
 IncludeDir["Glad"] = "Scotch/vendor/Glad/include"
 IncludeDir["ImGui"] = "Scotch/vendor/imgui"
+IncludeDir["glm"] = "Scotch/vendor/glm"
 
 include "Scotch/vendor/GLFW"
     filter "system:windows"
@@ -49,7 +50,8 @@ project "Scotch"
         "%{prj.name}/vendor/spdlog/include",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
-        "%{IncludeDir.ImGui}"
+        "%{IncludeDir.ImGui}",
+        "%{IncludeDir.glm}"
     }
 
     links
@@ -110,7 +112,8 @@ project "Sandbox"
     includedirs 
     {
         "Scotch/vendor/spdlog/include",
-        "Scotch/src"
+        "Scotch/src",
+        "%{IncludeDir.glm}"
     }
 
     links 
