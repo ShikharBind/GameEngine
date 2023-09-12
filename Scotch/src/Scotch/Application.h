@@ -6,6 +6,8 @@
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
 
+#include "Scotch/ImGui/ImGuiLayer.h"
+
 namespace Scotch {
 	class SCOTCH_API Application
 	{
@@ -27,6 +29,7 @@ namespace Scotch {
 		bool OnWindowClose(WindowCloseEvent& e);
 
 		std::unique_ptr<Window> m_Window;
+		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 
