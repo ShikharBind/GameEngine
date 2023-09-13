@@ -24,7 +24,7 @@ namespace Scotch {
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 
 	private:
-		int m_MouseX, m_MouseY;
+		float m_MouseX, m_MouseY;
 	};
 
 
@@ -48,7 +48,7 @@ namespace Scotch {
 			EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 
 	private:
-		int m_XOffset, m_YOffset;
+		float m_XOffset, m_YOffset;
 	};
 
 

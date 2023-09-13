@@ -1,10 +1,14 @@
 #pragma once
 
 #ifdef SH_PLATFORM_WINDOWS
-	#ifdef SH_BUILD_DLL
-		#define SCOTCH_API __declspec(dllexport)
+	#if SH_DYNAMIC_LINK
+		#ifdef SH_BUILD_DLL
+			#define SCOTCH_API __declspec(dllexport)
+		#else
+			#define SCOTCH_API __declspec(dllimport)
+		#endif
 	#else
-		#define SCOTCH_API __declspec(dllimport)
+		#define SCOTCH_API
 	#endif
 #else
 	#error Scotch only support Windows!
