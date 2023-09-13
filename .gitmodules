@@ -11,3 +11,4 @@
 	path = Scotch/vendor/imgui
 	url = git@github.com:ShikharBind/imgui.git
 	branch = docking
+	ignore = untracked
