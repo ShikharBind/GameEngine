@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Scotch/Window.h"
+#include "Scotch/Renderer/GraphicsContext.h"
 
 #include "GLFW/glfw3.h"
 
@@ -29,6 +30,7 @@ namespace Scotch {
 		virtual void Shutdown();
 
 		GLFWwindow* m_Window;
+		GraphicsContext* m_Context;
 
 		struct WindowData
 		{
