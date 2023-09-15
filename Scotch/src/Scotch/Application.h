@@ -8,6 +8,10 @@
 
 #include "Scotch/ImGui/ImGuiLayer.h"
 
+#include "Scotch/Renderer/Shader.h"
+#include "Scotch/Renderer/Buffer.h"
+#include "Scotch/Renderer/VertexArray.h"
+
 namespace Scotch {
 	class SCOTCH_API Application
 	{
@@ -33,6 +37,11 @@ namespace Scotch {
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 
+		std::shared_ptr<Shader> m_Shader;
+		std::shared_ptr<VertexArray> m_VertexArray;
+
+		std::shared_ptr<Shader> m_BlueShader;
+		std::shared_ptr<VertexArray> m_SquareVA;
 
 		static Application* s_Instance;
 	};

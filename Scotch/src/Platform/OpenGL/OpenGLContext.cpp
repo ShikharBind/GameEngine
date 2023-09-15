@@ -15,6 +15,12 @@ namespace Scotch {
 		glfwMakeContextCurrent(m_windowHandle);
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		SH_CORE_ASSERT(status, "Failed to initialize Glad!");
+
+		SH_CORE_INFO("OpenGL Info: \n\t\t Vendor: {0}\n\t\t Renderer: {1}\n\t\t Version: {2}", 
+			(const char*)glGetString(GL_VENDOR),
+			(const char*)glGetString(GL_RENDERER),
+			(const char*)glGetString(GL_VERSION)
+		);
 	}
 	void OpenGLContext::SwapBuffers()
 	{

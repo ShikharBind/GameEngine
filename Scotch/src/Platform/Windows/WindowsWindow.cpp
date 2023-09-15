@@ -37,7 +37,7 @@ namespace Scotch {
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
 
-		SH_CORE_INFO("Creating widow {0} ({1}, {2})", props.Title, props.Width, props.Height);
+		SH_CORE_INFO("Creating window {0} ({1}, {2})", props.Title, props.Width, props.Height);
 
 		if (!s_GLFWInitialized)
 		{
