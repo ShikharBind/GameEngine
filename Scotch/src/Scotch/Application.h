@@ -8,14 +8,8 @@
 
 #include "Scotch/ImGui/ImGuiLayer.h"
 
-#include "Scotch/Renderer/Shader.h"
-#include "Scotch/Renderer/Buffer.h"
-#include "Scotch/Renderer/VertexArray.h"
-
-#include "Scotch/Renderer/Camera.h"
-
 namespace Scotch {
-	class SCOTCH_API Application
+	class Application
 	{
 	public:
 		Application();
