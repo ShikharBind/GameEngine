@@ -12,6 +12,8 @@
 #include "Scotch/Renderer/Buffer.h"
 #include "Scotch/Renderer/VertexArray.h"
 
+#include "Scotch/Renderer/Camera.h"
+
 namespace Scotch {
 	class SCOTCH_API Application
 	{
@@ -36,12 +38,6 @@ namespace Scotch {
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		LayerStack m_LayerStack;
-
-		std::shared_ptr<Shader> m_Shader;
-		std::shared_ptr<VertexArray> m_VertexArray;
-
-		std::shared_ptr<Shader> m_BlueShader;
-		std::shared_ptr<VertexArray> m_SquareVA;
 
 		static Application* s_Instance;
 	};

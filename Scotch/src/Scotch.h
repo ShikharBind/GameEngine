@@ -13,6 +13,17 @@
 
 #include "Scotch/ImGui/ImGuiLayer.h"
 
+// ------ Renderer -----------------
+#include "Scotch/Renderer/Renderer.h"
+#include "Scotch/Renderer/RenderCommand.h"
+
+#include "Scotch/Renderer/Buffer.h"
+#include "Scotch/Renderer/Shader.h"
+#include "Scotch/Renderer/VertexArray.h"
+
+#include "Scotch/Renderer/Camera.h"
+// ---------------------------------
+
 // ------ Entry Point --------------
 #include "Scotch/EntryPoint.h"
 // ---------------------------------
