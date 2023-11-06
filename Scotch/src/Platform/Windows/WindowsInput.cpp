@@ -1,7 +1,7 @@
 #include "shpch.h"
 #include "WindowsInput.h"
 
-#include "Scotch/Application.h"
+#include "Scotch/Core/Application.h"
 #include <GLFW/glfw3.h>
 
 namespace Scotch

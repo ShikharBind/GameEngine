@@ -5,7 +5,7 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
 
-#include "Scotch/Application.h"
+#include "Scotch/Core/Application.h"
 
 // Temporary
 #include <glad/glad.h>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Scotch/Core.h"
+#include "Scotch/Core/Core.h"
 
 namespace Scotch {
 

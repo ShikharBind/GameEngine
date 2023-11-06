@@ -2,7 +2,7 @@
 
 #include "shpch.h"
 
-#include "Scotch/Core.h"
+#include "Scotch/Core/Core.h"
 #include "Scotch/Events/Event.h"
 
 namespace Scotch {

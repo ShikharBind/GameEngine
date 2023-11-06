@@ -1,7 +1,7 @@
 #pragma once
 
 #include "shpch.h"
-#include "Scotch/Core.h"
+#include "Scotch/Core/Core.h"
 #include "layer.h"
 
 namespace Scotch {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Scotch/Layer.h"
+#include "Scotch/Core/Layer.h"
 
 #include "Scotch/Events/ApplicationEvent.h"
 #include "Scotch/Events/MouseEvent.h"

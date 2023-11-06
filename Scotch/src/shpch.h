@@ -8,11 +8,12 @@
 
 #include <string>
 #include <sstream>
+#include <array>
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
 
-#include "Scotch/Log.h"
+#include "Scotch/Core/Log.h"
 
 #ifdef SH_PLATFORM_WINDOWS
 	#include <Windows.h>

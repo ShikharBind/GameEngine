@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Scotch/Window.h"
+#include "Scotch/Core/Window.h"
 #include "Scotch/Renderer/GraphicsContext.h"
 
 #include "GLFW/glfw3.h"

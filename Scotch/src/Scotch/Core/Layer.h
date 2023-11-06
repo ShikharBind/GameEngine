@@ -1,7 +1,9 @@
 #pragma once
 
-#include "Scotch/Core.h"
+#include "Scotch/Core/Core.h"
 #include "Scotch/Events/Event.h"
+
+#include "Scotch/Core/TimeStep.h"
 
 namespace Scotch {
 
@@ -13,7 +15,7 @@ namespace Scotch {
 
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
-		virtual void OnUpdate() {}
+		virtual void OnUpdate(TimeStep ts) {}
 		virtual void OnImGuiRender() {}
 		virtual void OnEvent(Event& event) {}
 

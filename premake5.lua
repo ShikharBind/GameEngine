@@ -17,6 +17,7 @@ IncludeDir["GLFW"] = "Scotch/vendor/GLFW/include"
 IncludeDir["Glad"] = "Scotch/vendor/Glad/include"
 IncludeDir["ImGui"] = "Scotch/vendor/imgui"
 IncludeDir["glm"] = "Scotch/vendor/glm"
+IncludeDir["stb_image"] = "Scotch/vendor/stb_image"
 
 include "Scotch/vendor/GLFW"
     filter "system:windows"
@@ -42,7 +43,9 @@ project "Scotch"
     files
     {
         "%{prj.name}/src/**.h",
-        "%{prj.name}/src/**.cpp"
+        "%{prj.name}/src/**.cpp",
+        "%{prj.name}/vendor/stb_image/**.h",
+        "%{prj.name}/vendor/stb_image/**.cpp"
     }
 
     defines
@@ -57,7 +60,8 @@ project "Scotch"
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
         "%{IncludeDir.ImGui}",
-        "%{IncludeDir.glm}"
+        "%{IncludeDir.glm}",
+        "%{IncludeDir.stb_image}"
     }
 
     links
@@ -114,6 +118,7 @@ project "Sandbox"
     {
         "Scotch/vendor/spdlog/include",
         "Scotch/src",
+        "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}"
     }
 
