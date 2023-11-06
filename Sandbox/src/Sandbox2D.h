@@ -20,8 +20,7 @@ private:
 	//Scotch::ShaderLibrary m_ShaderLibrary;
 
 	// Temp
-	Scotch::Ref<Scotch::Shader> m_Shader;
-	Scotch::Ref<Scotch::VertexArray> m_SquareVA;
+	Scotch::Ref<Scotch::Texture2D> m_Texture;
 	glm::vec4 m_SquareColor = { 0.2f, 0.3f, 0.8f, 1.0 };
 
 };

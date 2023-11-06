@@ -1,7 +1,5 @@
 #include "Sandbox2D.h"
 
-#include "Platform/OpenGL/OpenGLShader.h"
-
 #include "imgui.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -13,29 +11,7 @@ Sandbox2D::Sandbox2D()
 
 void Sandbox2D::OnAttach()
 {
-	// Rendering Square //////////////////
-
-	m_SquareVA = Scotch::VertexArray::Create();
-
-	float squareVertices[4 * 5] = {
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 0.5f,  0.5f, 0.0f,
-		-0.5f,  0.5f, 0.0f,
-	};
-	Scotch::Ref<Scotch::VertexBuffer> m_SquareVB(Scotch::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
-
-	m_SquareVB->SetLayout({
-		{Scotch::ShaderDataType::Float3, "a_Position"}
-	});
-	m_SquareVA->AddVertexBuffer(m_SquareVB);
-
-	uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
-
-	Scotch::Ref<Scotch::IndexBuffer> m_SquareIB(Scotch::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
-	m_SquareVA->SetIndexBuffer(m_SquareIB);
-
-	m_Shader = Scotch::Shader::Create("assets/shaders/FlatColor.glsl");
+	m_Texture = Scotch::Texture2D::Create("assets/textures/whitepaper.jpg");
 }
 
 void Sandbox2D::OnDetach()
@@ -51,14 +27,13 @@ void Sandbox2D::OnUpdate(Scotch::TimeStep ts)
 	Scotch::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 	Scotch::RenderCommand::Clear();
 
-	Scotch::Renderer::BeginScene(m_CameraController.GetCamera());
+	Scotch::Renderer2D::BeginScene(m_CameraController.GetCamera());
 
-	std::dynamic_pointer_cast<Scotch::OpenGLShader>(m_Shader)->Bind();
-	std::dynamic_pointer_cast<Scotch::OpenGLShader>(m_Shader)->UploadUniformFloat4("u_Color", m_SquareColor);
-	
-	Scotch::Renderer::Submit(m_Shader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+	Scotch::Renderer2D::DrawQuad({ 0.5f, 0.5f }, { 0.5f, 0.75f }, { 0.2f, 0.8f, 0.3f, 1.0f });
+	Scotch::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
+	Scotch::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 2.5f, 2.5f }, m_Texture);
 
-	Scotch::Renderer::EndScene();
+	Scotch::Renderer2D::EndScene();
 }
 
 void Sandbox2D::OnImGuiRender()

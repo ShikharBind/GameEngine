@@ -17,6 +17,7 @@
 
 // ------ Renderer -----------------
 #include "Scotch/Renderer/Renderer.h"
+#include "Scotch/Renderer/Renderer2D.h"
 #include "Scotch/Renderer/RenderCommand.h"
 
 #include "Scotch/Renderer/Buffer.h"
