@@ -1,10 +1,13 @@
 #include <Scotch.h>
+#include <Scotch/Core/EntryPoint.h>
 
 #include "Platform/OpenGL/OpenGLShader.h"
 
 #include "imgui.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "Sandbox2D.h"
 
 class ExampleLayer : public Scotch::Layer
 {
@@ -212,8 +215,8 @@ class Sandbox : public Scotch::Application
 public:
 	Sandbox()
 	{
-		PushLayer(new ExampleLayer());
-		// PushOverlay(new Scotch::ImGuiLayer());
+		// PushLayer(new ExampleLayer());
+		PushOverlay(new Sandbox2D());
 	}
 
 	~Sandbox() 

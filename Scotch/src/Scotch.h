@@ -26,7 +26,3 @@
 
 #include "Scotch/Renderer/Camera.h"
 // ---------------------------------
-
-// ------ Entry Point --------------
-#include "Scotch/Core/EntryPoint.h"
-// ---------------------------------
