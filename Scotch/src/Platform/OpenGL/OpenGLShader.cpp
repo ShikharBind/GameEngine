@@ -19,6 +19,8 @@ namespace Scotch {
 
 	OpenGLShader::OpenGLShader(const std::string& filepath)
 	{
+		SH_PROFILE_FUNCTION();
+
 		std::string source = ReadFile(filepath);
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
@@ -32,6 +34,8 @@ namespace Scotch {
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 		: m_Name(name)
 	{
+		SH_PROFILE_FUNCTION();
+
 		std::unordered_map<GLenum, std::string> shaderSources;
 		shaderSources[GL_VERTEX_SHADER] = vertexSrc;
 		shaderSources[GL_FRAGMENT_SHADER] = fragmentSrc;
@@ -40,16 +44,22 @@ namespace Scotch {
 
 	OpenGLShader::~OpenGLShader()
 	{
+		SH_PROFILE_FUNCTION();
+
 		glDeleteProgram(m_RenderID);
 	}
 
 	void OpenGLShader::Bind() const
 	{
+		SH_PROFILE_FUNCTION();
+
 		glUseProgram(m_RenderID);
 	}
 
 	void OpenGLShader::Unbind() const
 	{
+		SH_PROFILE_FUNCTION();
+
 		glUseProgram(0);
 	}
 
@@ -90,6 +100,8 @@ namespace Scotch {
 	}
 	std::string OpenGLShader::ReadFile(const std::string& filepath)
 	{
+		SH_PROFILE_FUNCTION();
+
 		std::string result;
 		std::ifstream in(filepath, std::ios::in | std::ios::binary);
 
@@ -111,6 +123,8 @@ namespace Scotch {
 
 	std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string& source)
 	{
+		SH_PROFILE_FUNCTION();
+
 		std::unordered_map<GLenum, std::string> shaderSources;
 
 		const char* typeToken = "#type";
@@ -137,6 +151,8 @@ namespace Scotch {
 
 	void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
 	{
+		SH_PROFILE_FUNCTION();
+
 		uint32_t program = glCreateProgram();
 		SH_CORE_ASSERT(shaderSources.size() <= 2, "We only support 2 shaders for now");
 		std::array<GLenum, 2> glShaderIDs;

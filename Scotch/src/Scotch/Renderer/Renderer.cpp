@@ -11,6 +11,8 @@ namespace Scotch {
 
 	void Renderer::Init()
 	{
+		SH_PROFILE_FUNCTION();
+
 		RenderCommand::Init();
 		Renderer2D::Init();
 	}
@@ -22,15 +24,20 @@ namespace Scotch {
 
 	void Renderer::BeginScene(OrthographicCamera& camera)
 	{
+		SH_PROFILE_FUNCTION();
+
 		m_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
 	}
 
 	void Renderer::EndScene()
 	{
+		SH_PROFILE_FUNCTION();
 	}
 
 	void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
+		SH_PROFILE_FUNCTION();
+
 		shader->Bind();
 		shader->SetMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
 		shader->SetMat4("u_Transform", transform);

@@ -2,6 +2,8 @@
 .vs/
 bin/
 bin-int/
+*/[Ll]og/*
+*/[Ll]ogs/*
 
 # Files
 *.vcxproj

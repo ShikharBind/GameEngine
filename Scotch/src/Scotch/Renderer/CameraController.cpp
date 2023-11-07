@@ -14,6 +14,8 @@ namespace Scotch
 
 	void OrthographicCameraController::OnUpdate(TimeStep deltaTime)
 	{
+		SH_PROFILE_FUNCTION();
+
 		if (Input::IsKeyPressed(SH_KEY_A))
 			m_CameraPosition.x -= m_CameraTranslationSpeed * deltaTime;
 		else if (Input::IsKeyPressed(SH_KEY_D))
@@ -41,6 +43,8 @@ namespace Scotch
 
 	void OrthographicCameraController::OnEvent(Event& e)
 	{
+		SH_PROFILE_FUNCTION();
+
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<MouseScrolledEvent>(SH_BIND_EVENT_FN(OrthographicCameraController::OnMouseScrolled));
 		dispatcher.Dispatch<WindowResizeEvent>(SH_BIND_EVENT_FN(OrthographicCameraController::OnWindowResized));
@@ -48,6 +52,8 @@ namespace Scotch
 
 	bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e)
 	{
+		SH_PROFILE_FUNCTION();
+
 		m_ZoomLevel -= e.GetYOffset() * 0.5f;
 		m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
@@ -56,6 +62,8 @@ namespace Scotch
 
 	bool OrthographicCameraController::OnWindowResized(WindowResizeEvent& e)
 	{
+		SH_PROFILE_FUNCTION();
+
 		m_AspectRatio = (float)e.GetWidth() / (float)e.GetHeight();
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 		return false;

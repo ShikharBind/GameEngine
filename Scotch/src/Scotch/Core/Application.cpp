@@ -15,6 +15,8 @@ namespace Scotch {
 
 	Application::Application() 
 	{
+		SH_PROFILE_FUNCTION();
+
 		SH_CORE_ASSERT(!s_Instance, "Application already exist");
 		s_Instance = this;
 
@@ -32,16 +34,24 @@ namespace Scotch {
 
 	void Application::PushLayer(Layer* layer)
 	{
+		SH_PROFILE_FUNCTION();
+
 		m_LayerStack.PushLayer(layer);
+		layer->OnAttach();
 	}
 
 	void Application::PushOverlay(Layer* layer)
 	{
+		SH_PROFILE_FUNCTION();
+
 		m_LayerStack.PushOverlay(layer);
+		layer->OnAttach();
 	}
 
 	void Application::OnEvent(Event& e)
 	{
+		SH_PROFILE_FUNCTION();
+
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(SH_BIND_EVENT_FN(Application::OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(SH_BIND_EVENT_FN(Application::OnWindowResize));
@@ -56,8 +66,12 @@ namespace Scotch {
 
 	void Application::Run() 
 	{
+		SH_PROFILE_FUNCTION();
+
 		while (m_Running)
 		{
+			SH_PROFILE_SCOPE("RunLoop");
+
 			float time = (float)glfwGetTime(); //PlatformSpecific
 			TimeStep timestep = time - m_LastFrameTime;
 			m_LastFrameTime = time;
@@ -65,16 +79,24 @@ namespace Scotch {
 
 			if (!m_Minimized)
 			{
-				for (Layer* layer : m_LayerStack)
-					layer->OnUpdate(timestep);
+				{
+					SH_PROFILE_SCOPE("LayerStack OnUpdate");
+
+					for (Layer* layer : m_LayerStack)
+						layer->OnUpdate(timestep);
+				}
+
+				m_ImGuiLayer->Begin();
+				{
+					SH_PROFILE_SCOPE("LayerStack OnImGuiRender");
+
+					for (Layer* layer : m_LayerStack)
+						layer->OnImGuiRender();
+				}
+				m_ImGuiLayer->End();
+
+				m_Window->OnUpdate();
 			}
-
-			m_ImGuiLayer->Begin();
-			for (Layer* layer : m_LayerStack)
-				layer->OnImGuiRender(); 
-			m_ImGuiLayer->End();
-
-			m_Window->OnUpdate();
 		}
 	}
 
@@ -85,6 +107,8 @@ namespace Scotch {
 	}
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{
+		SH_PROFILE_FUNCTION();
+
 		if (e.GetHeight() == 0 || e.GetWidth() == 0)
 		{
 			m_Minimized = true;

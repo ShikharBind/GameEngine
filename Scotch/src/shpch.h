@@ -14,6 +14,7 @@
 #include <unordered_set>
 
 #include "Scotch/Core/Log.h"
+#include "Scotch/Debug/Instrumentor.h"
 
 #ifdef SH_PLATFORM_WINDOWS
 	#include <Windows.h>
