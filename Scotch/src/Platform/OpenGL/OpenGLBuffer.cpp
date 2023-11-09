@@ -4,7 +4,14 @@
 #include "glad/glad.h"
 
 namespace Scotch {
+	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size)
+	{
+		SH_PROFILE_FUNCTION();
 
+		glCreateBuffers(1, &m_RenderID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_RenderID);
+		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+	}
 	// VertexBuffer ///////////////////////////////////////////////////////////////
 	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size)
 	{
@@ -36,6 +43,12 @@ namespace Scotch {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
+	void OpenGLVertexBuffer::SetData(const void* data, uint32_t size)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, m_RenderID);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+	}
+
 
 
 	// IndexBuffer ///////////////////////////////////////////////////////////////
@@ -48,18 +61,21 @@ namespace Scotch {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RenderID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
 	}
+
 	OpenGLIndexBuffer::~OpenGLIndexBuffer()
 	{
 		SH_PROFILE_FUNCTION();
 
 		glDeleteBuffers(1, &m_RenderID);
 	}
+
 	void OpenGLIndexBuffer::Bind() const
 	{
 		SH_PROFILE_FUNCTION();
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RenderID);
 	}
+
 	void OpenGLIndexBuffer::Unbind() const
 	{
 		SH_PROFILE_FUNCTION();

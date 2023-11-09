@@ -14,7 +14,7 @@ namespace Scotch {
 	class Application
 	{
 	public:
-		Application();
+		Application(const std::string& name = "Scotch Engine");
 		virtual ~Application();
 
 		void Run();
@@ -25,6 +25,11 @@ namespace Scotch {
 		void PushOverlay(Layer* layer);
 
 		inline Window& GetWindow() { return *m_Window; }
+
+		void Close();
+
+		ImGuiLayer* GetImguiLayer() { return m_ImGuiLayer; }
+
 		inline static Application& Get() { return *s_Instance; }
 
 	private:

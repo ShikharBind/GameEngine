@@ -13,14 +13,14 @@ namespace Scotch {
 
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application() 
+	Application::Application(const std::string& name)
 	{
 		SH_PROFILE_FUNCTION();
 
 		SH_CORE_ASSERT(!s_Instance, "Application already exist");
 		s_Instance = this;
 
-		m_Window = std::unique_ptr<Window>(Window::Create());
+		m_Window = std::unique_ptr<Window>(Window::Create(name));
 		m_Window->SetEventCallback(SH_BIND_EVENT_FN(Application::OnEvent));
 		//m_Window->SetVSync(false);
 
@@ -48,6 +48,11 @@ namespace Scotch {
 		layer->OnAttach();
 	}
 
+	void Application::Close()
+	{
+		m_Running = false;
+	}
+
 	void Application::OnEvent(Event& e)
 	{
 		SH_PROFILE_FUNCTION();
@@ -56,11 +61,11 @@ namespace Scotch {
 		dispatcher.Dispatch<WindowCloseEvent>(SH_BIND_EVENT_FN(Application::OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(SH_BIND_EVENT_FN(Application::OnWindowResize));
 
-		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
+		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
 		{
-			(*--it)->OnEvent(e);
 			if (e.Handled)
 				break;
+			(*it)->OnEvent(e);
 		}
 	}
 
@@ -94,9 +99,9 @@ namespace Scotch {
 						layer->OnImGuiRender();
 				}
 				m_ImGuiLayer->End();
-
-				m_Window->OnUpdate();
 			}
+
+			m_Window->OnUpdate();
 		}
 	}
 

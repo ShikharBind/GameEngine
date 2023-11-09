@@ -20,14 +20,10 @@ private:
 
 	// Temp
 	Scotch::Ref<Scotch::Texture2D> m_Texture;
+	Scotch::Ref<Scotch::Texture2D> m_SpriteSheet;
+	Scotch::Ref<Scotch::Texture2D> m_Logo;
 
-	struct ProfileResult
-	{
-		const char* Name;
-		float Time;
-	};
-
-	std::vector<ProfileResult> m_ProfileResults;
+	Scotch::Ref<Scotch::SubTexture2D> m_TextureStairs, m_TreeTexture;
 
 	glm::vec4 m_SquareColor = { 0.2f, 0.3f, 0.8f, 1.0 };
 

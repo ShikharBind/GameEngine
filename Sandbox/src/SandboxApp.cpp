@@ -216,7 +216,7 @@ public:
 	Sandbox()
 	{
 		// PushLayer(new ExampleLayer());
-		PushOverlay(new Sandbox2D());
+		PushLayer(new Sandbox2D());
 	}
 
 	~Sandbox() 

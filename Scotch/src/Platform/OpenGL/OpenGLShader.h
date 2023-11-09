@@ -21,6 +21,7 @@ namespace Scotch {
 		virtual const std::string& GetName() const override { return m_Name; }
 
 		virtual void SetInt(const std::string& name, int value) override { UploadUniformInt(name, value); }
+		virtual void SetIntArray(const std::string& name, int* values, uint32_t count) override { UploadUniformIntArray(name, values, count); }
 		virtual void SetFloat(const std::string& name, float value) override { UploadUniformFloat(name, value); }
 		virtual void SetFloat2(const std::string& name, const glm::vec2& value) override { UploadUniformFloat2(name, value); }
 		virtual void SetFloat3(const std::string& name, const glm::vec3& value) override { UploadUniformFloat3(name, value); }
@@ -28,7 +29,8 @@ namespace Scotch {
 		virtual void SetMat4(const std::string& name, const glm::mat4& value) override {UploadUniformMat4(name, value);}
 
 
-		void UploadUniformInt(const std::string& name, int values);
+		void UploadUniformInt(const std::string& name, int values); 
+		void UploadUniformIntArray(const std::string& name, int* values, uint32_t count);
 
 		void UploadUniformFloat(const std::string& name, float values);
 		void UploadUniformFloat2(const std::string& name, const glm::vec2& values);

@@ -21,6 +21,7 @@
 #include "Scotch/Renderer/RenderCommand.h"
 
 #include "Scotch/Renderer/Buffer.h"
+#include "Scotch/Renderer/FrameBuffer.h"
 #include "Scotch/Renderer/Shader.h"
 #include "Scotch/Renderer/Texture.h"
 #include "Scotch/Renderer/VertexArray.h"
