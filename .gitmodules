@@ -15,3 +15,4 @@
 [submodule "Scotch/vendor/yaml-cpp"]
 	path = Scotch/vendor/yaml-cpp
 	url = git@github.com:ShikharBind/yaml-cpp.git
+	ignore = untracked
