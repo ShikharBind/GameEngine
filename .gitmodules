@@ -12,3 +12,6 @@
 	url = git@github.com:ShikharBind/imgui.git
 	branch = docking
 	ignore = untracked
+[submodule "Scotch/vendor/yaml-cpp"]
+	path = Scotch/vendor/yaml-cpp
+	url = git@github.com:ShikharBind/yaml-cpp.git
