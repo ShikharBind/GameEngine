@@ -9,11 +9,6 @@ workspace "Scotch"
         "Dist"
     }
 
-	flags
-	{
-		"MultiProcessorCompile"
-	}
-
 outputdir= "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- Include directories related to root folder (solution directory)

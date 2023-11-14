@@ -19,9 +19,18 @@ namespace Scotch {
 		void OnEvent(Event& e) override;
 
 	private:
+		bool OnKeyPressedEvent(KeyPressedEvent e);
+
+		void NewScene();
+		void LoadScene();
+		void SaveScene();
+		void SaveSceneAs();
+
+	private:
 		Scotch::OrthographicCameraController m_CameraController;
 		Ref<FrameBuffer> m_FrameBuffer;
 		Ref<Scene> m_ActiveScene;
+		std::string m_ActiveSceneFilepath = std::string();
 
 		// View Port
 		glm::vec2 m_ViewportSize = {0, 0};

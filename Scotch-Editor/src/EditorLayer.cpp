@@ -4,6 +4,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Scotch/Core/KeyCodes.h"
 
+#include "Scotch/Scene/SceneSerializer.h"
+#include "Scotch/Utils/PlatformUtils.h"
+
 namespace Scotch {
 
     EditorLayer::EditorLayer()
@@ -33,9 +36,10 @@ namespace Scotch {
             m_FrameBuffer = FrameBuffer::Create(fbSpec);
         }
 
-        m_ActiveScene = CreateRef<Scene>();
+        NewScene();
 
-        // Scene Details
+        // Old Scene Details
+#if 0
         {
             Entity greenSquare = m_ActiveScene->CreateEntity("Green Square");
             greenSquare.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
@@ -71,8 +75,7 @@ namespace Scotch {
 
             camera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
         }
-
-        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+#endif
     }
 
     void EditorLayer::OnDetach()
@@ -200,9 +203,21 @@ namespace Scotch {
         {
             if (ImGui::BeginMenu("File"))
             {
-                if (ImGui::MenuItem("Exit")) Application::Get().Close();
+                if (ImGui::MenuItem("New Scene", "Ctrl+N"))
+                    NewScene();
+
+                if (ImGui::MenuItem("Load Scene...", "Ctrl+O"))
+                    LoadScene();
+
+                if (ImGui::MenuItem("Save Scene", "Ctrl+S"))
+                    SaveScene();
+
+                if (ImGui::MenuItem("Save Scene As...", "Ctrl+Shift+S"))
+                    SaveSceneAs();
+
                 ImGui::Separator();
-                ImGui::MenuItem("Dekhne me achha lag rha");
+
+                if (ImGui::MenuItem("Exit")) Application::Get().Close();
 
                 ImGui::EndMenu();
             }
@@ -245,6 +260,92 @@ namespace Scotch {
     void EditorLayer::OnEvent(Event& e)
     {
         m_CameraController.OnEvent(e);
+
+        EventDispatcher dispatcher(e);
+        dispatcher.Dispatch<KeyPressedEvent>(SH_BIND_EVENT_FN(EditorLayer::OnKeyPressedEvent));
+    }
+
+    bool EditorLayer::OnKeyPressedEvent(KeyPressedEvent e)
+    {
+        //Shortcuts
+        if (e.GetRepeatCount() > 0)
+            return false;
+
+        bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+        bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
+
+        switch (e.GetKeyCode())
+        {
+        case Key::S:
+        {
+            if (control)
+            {
+                if (shift) SaveSceneAs();
+                else SaveScene();
+            }
+            break;
+        }
+        case Key::O:
+        {
+            if (control)
+                LoadScene();
+            break;
+        }
+        case Key::N:
+        {
+            if (control)
+                NewScene();
+            break;
+        }
+        }
+    }
+
+    void EditorLayer::NewScene()
+    {
+        m_ActiveScene = CreateRef<Scene>();
+        m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+        m_ActiveSceneFilepath = std::string();
+
+        // Setting new scene template
+        Entity square = m_ActiveScene->CreateEntity("Square");
+        square.AddComponent<SpriteRendererComponent>();
+        Entity camera = m_ActiveScene->CreateEntity("Main Camera");
+        camera.AddComponent<CameraComponent>();
+    }
+
+    void EditorLayer::LoadScene()
+    {
+        std::string filepath = FileDialogs::OpenFile("Scotch Scene (*.scotch)\0*.scotch\0");
+        if (!filepath.empty())
+        {
+            m_ActiveScene = CreateRef<Scene>();
+            m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+            m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
+            SceneSerializer serializer(m_ActiveScene);
+            serializer.Deserialize(filepath);
+        }
+        m_ActiveSceneFilepath = filepath;
+    }
+
+    void EditorLayer::SaveScene()
+    {
+        if (!m_ActiveSceneFilepath.empty())
+        {
+            SceneSerializer serializer(m_ActiveScene);
+            serializer.Serialize(m_ActiveSceneFilepath);
+        }
+        else
+        {
+            SaveSceneAs();
+        }
+    }
+
+    void EditorLayer::SaveSceneAs()
+    {
+        m_ActiveSceneFilepath = FileDialogs::SaveFile("Scotch Scene (*.scotch)\0*.scotch\0");
+        if (!m_ActiveSceneFilepath.empty()) SaveScene();
     }
 
 }

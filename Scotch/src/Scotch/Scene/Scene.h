@@ -29,6 +29,7 @@ namespace Scotch {
 		uint32_t m_ViewportWidth = 1, m_ViewportHeight = 1;
 
 		friend class Entity;
+		friend class SceneSerializer;
 		friend class SceneHierarchyPanel;
 	};
 }
