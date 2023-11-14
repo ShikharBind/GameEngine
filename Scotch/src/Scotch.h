@@ -15,6 +15,11 @@
 
 #include "Scotch/ImGui/ImGuiLayer.h"
 
+#include "Scotch/Scene/Scene.h"
+#include "Scotch/Scene/Entity.h"
+#include "Scotch/Scene/ScriptableEntity.h"
+#include "Scotch/Scene/Components.h"
+
 // ------ Renderer -----------------
 #include "Scotch/Renderer/Renderer.h"
 #include "Scotch/Renderer/Renderer2D.h"

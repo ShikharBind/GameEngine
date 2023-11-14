@@ -18,6 +18,7 @@ IncludeDir["Glad"] = "Scotch/vendor/Glad/include"
 IncludeDir["ImGui"] = "Scotch/vendor/imgui"
 IncludeDir["glm"] = "Scotch/vendor/glm"
 IncludeDir["stb_image"] = "Scotch/vendor/stb_image"
+IncludeDir["entt"] = "Scotch/vendor/entt/include"
 
 group "Dependencies"
 include "Scotch/vendor/GLFW"
@@ -63,7 +64,8 @@ project "Scotch"
         "%{IncludeDir.Glad}",
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}",
-        "%{IncludeDir.stb_image}"
+        "%{IncludeDir.stb_image}",
+        "%{IncludeDir.entt}"
     }
 
     links
@@ -121,7 +123,8 @@ project "Sandbox"
         "Scotch/vendor/spdlog/include",
         "Scotch/src",
         "%{IncludeDir.ImGui}",
-        "%{IncludeDir.glm}"
+        "%{IncludeDir.glm}",
+        "%{IncludeDir.entt}"
     }
 
     links 
@@ -175,7 +178,8 @@ project "Scotch-Editor"
         "Scotch/vendor/spdlog/include",
         "Scotch/src",
         "%{IncludeDir.ImGui}",
-        "%{IncludeDir.glm}"
+        "%{IncludeDir.glm}",
+        "%{IncludeDir.entt}"
     }
 
     links 

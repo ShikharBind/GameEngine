@@ -1,8 +1,8 @@
 #include "EditorLayer.h"
 
 #include "imgui.h"
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "Scotch/Core/KeyCodes.h"
 
 namespace Scotch {
 
@@ -15,18 +15,64 @@ namespace Scotch {
     {
         SH_PROFILE_FUNCTION();
 
-        m_Texture = Texture2D::Create("assets/textures/whitepaper.jpg");
-        m_SpriteSheet = Texture2D::Create("assets/textures/RPGpack_sheet_2X.png");
-        m_Logo = Texture2D::Create("assets/textures/olx-logo.png");
+        // Load Textures
+        {
+            m_Texture = Texture2D::Create("assets/textures/whitepaper.jpg");
+            m_SpriteSheet = Texture2D::Create("assets/textures/RPGpack_sheet_2X.png");
+            m_Logo = Texture2D::Create("assets/textures/olx-logo.png");
 
-        m_TextureStairs = SubTexture2D::CreateFromCoords(m_SpriteSheet, { 7, 6 }, { 128.0f, 128.0f });
-        m_TreeTexture = SubTexture2D::CreateFromCoords(m_SpriteSheet, { 2, 1 }, { 128.0f, 128.0f }, { 1, 2 });
+            m_TextureStairs = SubTexture2D::CreateFromCoords(m_SpriteSheet, { 7, 6 }, { 128.0f, 128.0f });
+            m_TreeTexture = SubTexture2D::CreateFromCoords(m_SpriteSheet, { 2, 1 }, { 128.0f, 128.0f }, { 1, 2 });
+        }
 
-        FrameBufferSpecification fbSpec;
-        fbSpec.Width = 1280;
-        fbSpec.Height = 720;
+        // Setup Framebuffer
+        {
+            FrameBufferSpecification fbSpec;
+            fbSpec.Width = 1280;
+            fbSpec.Height = 720;
+            m_FrameBuffer = FrameBuffer::Create(fbSpec);
+        }
 
-        m_FrameBuffer = FrameBuffer::Create(fbSpec);
+        m_ActiveScene = CreateRef<Scene>();
+
+        // Scene Details
+        {
+            Entity greenSquare = m_ActiveScene->CreateEntity("Green Square");
+            greenSquare.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+            Entity RedSquare = m_ActiveScene->CreateEntity("Red Square");
+            RedSquare.AddComponent<SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+
+            Entity camera = m_ActiveScene->CreateEntity("Camera A");
+            camera.AddComponent<CameraComponent>();
+
+            Entity camera2 = m_ActiveScene->CreateEntity("Camera B");
+            camera2.AddComponent<CameraComponent>();
+            camera2.GetComponent<CameraComponent>().Primary = false;
+
+            class CameraController : public ScriptableEntity
+            {
+            public:
+
+                void OnUpdate(TimeStep ts)
+                {
+                    auto& translation = GetComponent<TransformComponent>().Translation;
+                    float speed = 5.0f;
+
+                    if (Input::IsKeyPressed(Key::A))
+                        translation.x -= speed * ts;
+                    if (Input::IsKeyPressed(Key::D))
+                        translation.x += speed * ts;
+                    if (Input::IsKeyPressed(Key::W))
+                        translation.y += speed * ts;
+                    if (Input::IsKeyPressed(Key::S))
+                        translation.y -= speed * ts;
+                }
+            };
+
+            camera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+        }
+
+        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
     }
 
     void EditorLayer::OnDetach()
@@ -38,53 +84,54 @@ namespace Scotch {
     {
         SH_PROFILE_FUNCTION();
 
+        //Resize
+        if (FrameBufferSpecification spec = m_FrameBuffer->GetSpecification();
+            m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
+            (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
+        {
+            m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+            m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
+
+            m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+        }
+
         // Update
         if(m_ViewportFocused)
             m_CameraController.OnUpdate(ts);
 
 
         // Render
-        // Reset stats
         Renderer2D::ResetStats();
+        m_FrameBuffer->Bind();
+        RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+        RenderCommand::Clear();
 
-        {
-            SH_PROFILE_SCOPE("Renderer Prep");
-            m_FrameBuffer->Bind();
-            RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
-            RenderCommand::Clear();
-        }
+        // Update scene
+        m_ActiveScene->OnUpdate(ts);
 
-        {
-            SH_PROFILE_SCOPE("Renderer Draw");
-            Scotch::Renderer2D::BeginScene(m_CameraController.GetCamera());
-
-            static float rotation = 0.0f;
-            rotation += ts * 50.f;
-
-            // Scotch::Renderer2D::DrawQuad({ 0.5f, 0.5f }, glm::radians(45.0f), { 0.5f, 0.75f }, { 0.2f, 0.8f, 0.3f, 1.0f });
-            Scotch::Renderer2D::DrawQuad({ 0.5f, 0.5f }, 0.0f, { 0.5f, 0.75f }, { 0.2f, 0.8f, 0.3f, 1.0f });
-            Scotch::Renderer2D::DrawQuad({ -1.0f, 0.0f }, 0.0f, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
-            Scotch::Renderer2D::DrawQuad({ -1.0f, 0.0f, 0.1f }, 0.0f, { 0.8f, 0.8f }, m_Logo);
-            Scotch::Renderer2D::DrawQuad({ 1.0f, 0.0f }, -rotation * 0.5f, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
-            Scotch::Renderer2D::DrawQuad({ 0.0f, -0.5f }, rotation, { 0.5f, 0.5f }, m_Texture, 1.0f, { 1.0f, 0.7f, 0.8f, 1.0f });
-            Scotch::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.2f }, 0.0f, { 10.0f, 10.0f }, m_Texture, 5.0f);
-
-            Scotch::Renderer2D::EndScene();
-
-
-            Scotch::Renderer2D::BeginScene(m_CameraController.GetCamera());
-
-            for (float y = -5.0f; y < 5.0f; y += 0.5f)
-            {
-                for (float x = -5.0f; x < 5.0f; x += 0.5f)
-                {
-                    glm::vec4 color = { (x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.5f };
-                    Scotch::Renderer2D::DrawQuad({ x + 0.25f, y + 0.25f }, 0.0f, { 0.45f, 0.45f }, color);
-                }
-            }
-
-            Scotch::Renderer2D::EndScene();
-        }
+        //{
+        //    static float rotation = 0.0f;
+        //    rotation += ts * 50.f;
+        //    Renderer2D::BeginScene(m_CameraController.GetCamera());
+        //    Renderer2D::DrawQuad({ 0.5f, 0.5f }, glm::radians(45.0f), { 0.5f, 0.75f }, { 0.2f, 0.8f, 0.3f, 1.0f });
+        //    Renderer2D::DrawQuad({ 0.5f, 0.5f }, 0.0f, { 0.5f, 0.75f }, { 0.2f, 0.8f, 0.3f, 1.0f });
+        //    Renderer2D::DrawQuad({ -1.0f, 0.0f }, 0.0f, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
+        //    Renderer2D::DrawQuad({ -1.0f, 0.0f, 0.1f }, 0.0f, { 0.8f, 0.8f }, m_Logo);
+        //    Renderer2D::DrawQuad({ 1.0f, 0.0f }, -rotation * 0.5f, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
+        //    Renderer2D::DrawQuad({ 0.0f, -0.5f }, rotation, { 0.5f, 0.5f }, m_Texture, 1.0f, { 1.0f, 0.7f, 0.8f, 1.0f });
+        //    Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.2f }, 0.0f, { 10.0f, 10.0f }, m_Texture, 5.0f);
+        //    Renderer2D::EndScene();
+        //    Renderer2D::BeginScene(m_CameraController.GetCamera());
+        //    for (float y = -5.0f; y < 5.0f; y += 0.5f)
+        //    {
+        //        for (float x = -5.0f; x < 5.0f; x += 0.5f)
+        //        {
+        //            glm::vec4 color = { (x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.5f };
+        //            Renderer2D::DrawQuad({ x + 0.25f, y + 0.25f }, 0.0f, { 0.45f, 0.45f }, color);
+        //        }
+        //    }
+        //    Renderer2D::EndScene();
+        //}
 
         m_FrameBuffer->Unbind();
 
@@ -139,18 +186,20 @@ namespace Scotch {
 
         // Submit the DockSpace
         ImGuiIO& io = ImGui::GetIO();
+        ImGuiStyle& style = ImGui::GetStyle();
+        float minWinSize = style.WindowMinSize.x;
+        style.WindowMinSize.x = 370.0f;
         if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
         {
             ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
             ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
         }
+        style.WindowMinSize.x = minWinSize;
 
         if (ImGui::BeginMenuBar())
         {
             if (ImGui::BeginMenu("File"))
             {
-                // Disabling fullscreen would allow the window to be moved to the front of other windows,
-                // which we can't undo at the moment without finer window depth/z control.
                 if (ImGui::MenuItem("Exit")) Application::Get().Close();
                 ImGui::Separator();
                 ImGui::MenuItem("Dekhne me achha lag rha");
@@ -161,17 +210,16 @@ namespace Scotch {
             ImGui::EndMenuBar();
         }
 
-        ImGui::Begin("Settings");
+        m_SceneHierarchyPanel.OnImGuiRender();
+
+        ImGui::Begin("Renderer2D Stats");
 
         auto stats = Renderer2D::GetStats();
 
-        ImGui::Text("Renderer2D Stats:");
         ImGui::Text("Draw calls: %d", stats.DrawCalls);
         ImGui::Text("Quads: %d", stats.QuadCount);
         ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
         ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-
-        ImGui::ColorEdit4("SquareColor", glm::value_ptr(m_SquareColor));
 
         ImGui::End();
 
@@ -183,13 +231,8 @@ namespace Scotch {
         Application::Get().GetImguiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);
 
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-        if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
-        {
-            m_FrameBuffer->Resize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
-            m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
+        m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 
-            m_CameraController.OnResize(viewportPanelSize.x, viewportPanelSize.y);
-        }
         uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
         ImGui::Image((void*)textureID, ImVec2(m_ViewportSize.x,m_ViewportSize.y), ImVec2{ 0,1 }, ImVec2{ 1,0 });
         ImGui::End();

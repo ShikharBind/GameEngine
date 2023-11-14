@@ -116,6 +116,19 @@ namespace Scotch {
 
 		// delete s_Data;
 	}
+	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)
+	{
+		SH_PROFILE_FUNCTION();
+
+		glm::mat4 viewProj = camera.GetProjection() * glm::inverse(transform);
+
+		s_Data.DefaultShader->Bind();
+		s_Data.DefaultShader->SetMat4("u_ViewProjection", viewProj);
+
+		s_Data.QuadIndexCount = 0;
+		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+		s_Data.TextureSlotIndex = 1;
+	}
 	void Renderer2D::BeginScene(OrthographicCamera& camera)
 	{
 		SH_PROFILE_FUNCTION();
@@ -162,6 +175,11 @@ namespace Scotch {
 	}
 	void Renderer2D::DrawQuad(const glm::vec3& position, float rotation, const glm::vec2& scale, const glm::vec4& color)
 	{
+		glm::mat4 transform = CalculateTransform(position, rotation, scale);
+		DrawQuad(transform, color);
+	}
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
+	{
 		SH_PROFILE_FUNCTION();
 
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
@@ -170,7 +188,7 @@ namespace Scotch {
 		const float textureIndex = 0.0f;
 		const float tilingFactor = 1.0f;
 
-		AddQuadToVB(position, rotation, scale, color, s_Data.QuadVertexTexCoords, textureIndex, tilingFactor);
+		AddQuadToVB(transform, color, s_Data.QuadVertexTexCoords, textureIndex, tilingFactor);
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const Ref<Texture2D> texture, float tilingFactor, const glm::vec4& color)
@@ -178,6 +196,11 @@ namespace Scotch {
 		DrawQuad({ position.x, position.y, 0.0f }, rotation, scale, texture, tilingFactor, color);
 	}
 	void Renderer2D::DrawQuad(const glm::vec3& position, float rotation, const glm::vec2& scale, const Ref<Texture2D> texture, float tilingFactor, const glm::vec4& color)
+	{
+		glm::mat4 transform = CalculateTransform(position, rotation, scale);
+		DrawQuad(transform, texture, tilingFactor, color);
+	}
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D> texture, float tilingFactor, const glm::vec4& color)
 	{
 		SH_PROFILE_FUNCTION();
 
@@ -201,7 +224,7 @@ namespace Scotch {
 			s_Data.TextureSlots[s_Data.TextureSlotIndex++] = texture;
 		}
 
-		AddQuadToVB(position, rotation, scale, color, s_Data.QuadVertexTexCoords, textureIndex, tilingFactor);
+		AddQuadToVB(transform, color, s_Data.QuadVertexTexCoords, textureIndex, tilingFactor);
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const Ref<SubTexture2D> subtexture, float tilingFactor, const glm::vec4& color)
@@ -209,6 +232,11 @@ namespace Scotch {
 		DrawQuad({ position.x, position.y, 0.0f }, rotation, scale, subtexture, tilingFactor, color);
 	}
 	void Renderer2D::DrawQuad(const glm::vec3& position, float rotation, const glm::vec2& scale, const Ref<SubTexture2D> subtexture, float tilingFactor, const glm::vec4& color)
+	{
+		glm::mat4 transform = CalculateTransform(position, rotation, scale);
+		DrawQuad(transform, subtexture, tilingFactor, color);
+	}
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<SubTexture2D> subtexture, float tilingFactor, const glm::vec4& color)
 	{
 		SH_PROFILE_FUNCTION();
 
@@ -235,11 +263,13 @@ namespace Scotch {
 			s_Data.TextureSlots[s_Data.TextureSlotIndex++] = texture;
 		}
 
-		AddQuadToVB(position, rotation, scale, color, textureCoords, textureIndex, tilingFactor);
+		AddQuadToVB(transform, color, textureCoords, textureIndex, tilingFactor);
 	}
 
-	void Renderer2D::AddQuadToVB(const glm::vec3& position, float rotation, const glm::vec2& scale, const glm::vec4& color, const glm::vec2* texCoords, float textureIndex, float tilingFactor)
+	glm::mat4 Renderer2D::CalculateTransform(const glm::vec3& position, float rotation, const glm::vec2& scale)
 	{
+		SH_PROFILE_FUNCTION();
+
 		glm::mat4 transform = glm::mat4(1.0f);
 
 		if (rotation == 0.0f)
@@ -254,36 +284,26 @@ namespace Scotch {
 				* glm::scale(glm::mat4(1.0f), { scale.x, scale.y, 1.0f });
 		}
 
-		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[0];
-		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = texCoords[0];
-		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-		s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
-		s_Data.QuadVertexBufferPtr++;
+		return transform;
+	}
 
-		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[1];
-		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = texCoords[1];
-		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-		s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
-		s_Data.QuadVertexBufferPtr++;
+	void Renderer2D::AddQuadToVB(const glm::mat4& transform, const glm::vec4& color, const glm::vec2* texCoords, float textureIndex, float tilingFactor)
+	{
+		SH_PROFILE_FUNCTION();
 
-		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[2];
-		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = texCoords[2];
-		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-		s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
-		s_Data.QuadVertexBufferPtr++;
+		constexpr size_t quadVertexCount = 4;
 
-		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[3];
-		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = texCoords[3];
-		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-		s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
-		s_Data.QuadVertexBufferPtr++;
+		for (size_t i = 0; i < quadVertexCount; i++)
+		{
+			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
+			s_Data.QuadVertexBufferPtr->Color = color;
+			s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
+			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+			s_Data.QuadVertexBufferPtr++;
+		}
 
 		s_Data.QuadIndexCount += 6;
-
 		s_Data.Stats.QuadCount++;
 
 #if OLD_PATH
