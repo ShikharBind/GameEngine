@@ -16,3 +16,7 @@
 	path = Scotch/vendor/yaml-cpp
 	url = git@github.com:ShikharBind/yaml-cpp.git
 	ignore = untracked
+[submodule "Scotch/vendor/ImGuizmo"]
+	path = Scotch/vendor/ImGuizmo
+	url = git@github.com:ShikharBind/ImGuizmo.git
+	ignore = dirty

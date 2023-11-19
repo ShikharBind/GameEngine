@@ -3,6 +3,7 @@
 #include "entt.hpp"
 
 #include "Scotch/Core/TimeStep.h"
+#include "Scotch/Renderer/EditorCamera.h"
 
 namespace Scotch {
 
@@ -17,8 +18,11 @@ namespace Scotch {
 		Entity CreateEntity(const std::string& name = std::string());
 		void DestroyEntity(Entity entity);
 
-		void OnUpdate(TimeStep ts);
+		void OnUpdateEditor(TimeStep ts, EditorCamera& camera);
+		void OnUpdateRuntime(TimeStep ts);
 		void OnViewportResize(uint32_t width, uint32_t height);
+
+		Entity GetPrimaryCamera();
 
 	private:
 		template<typename T>

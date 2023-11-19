@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "Texture.h"
 #include "SubTexture2D.h"
+#include "EditorCamera.h"
 
 namespace Scotch
 {
@@ -17,6 +18,7 @@ namespace Scotch
 		
 
 		static void BeginScene(const Camera& camera, const glm::mat4& transform);
+		static void BeginScene(EditorCamera& camera);
 		static void BeginScene(OrthographicCamera& camera); // TODO: Remove;
 		static void EndScene();
 		static void Flush();
@@ -48,6 +50,7 @@ namespace Scotch
 		static Statistics GetStats();
 
 	private:
+		static void StartBatch();
 		static void FlushAndReset();
 		static glm::mat4 CalculateTransform(const glm::vec3& position, float rotation, const glm::vec2& scale);
 		static void AddQuadToVB(const glm::mat4& transform, const glm::vec4& color, const glm::vec2* texCoords, float textureIndex, float tilingFactor);

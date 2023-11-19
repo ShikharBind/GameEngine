@@ -11,19 +11,29 @@ namespace Scotch {
 		~OpenGLFrameBuffer();
 
 		virtual const FrameBufferSpecification& GetSpecification() const override { return m_Specification; }
-		virtual uint32_t GetColorAttachmentRendererID() const override { return m_ColorAttachment; }
+		virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const override 
+		{
+			SH_CORE_ASSERT(index <= m_ColorAttachments.size(), "Framebuffer index out of bound!");
+			return m_ColorAttachments[index]; 
+		}
 		virtual void Bind() override;
 		virtual void Unbind() override;
 
 		virtual void Resize(uint32_t width, uint32_t height) override;
+		virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) override;
 
 		void Invalidate();
 
 
 	private:
 		uint32_t m_RendererID;
-		uint32_t m_ColorAttachment, m_DepthAttachment;
 		FrameBufferSpecification m_Specification;
+
+		std::vector<FramebufferTextureSpecification> m_ColorAttachmentSpecs;
+		FramebufferTextureSpecification m_DepthAttachmentSpec = FramebufferTextureFormat::None;
+
+		std::vector<uint32_t> m_ColorAttachments;
+		uint32_t m_DepthAttachment = 0;
 	};
 
 }

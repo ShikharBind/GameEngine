@@ -20,6 +20,7 @@ IncludeDir["glm"] = "%{wks.location}/Scotch/vendor/glm"
 IncludeDir["stb_image"] = "%{wks.location}/Scotch/vendor/stb_image"
 IncludeDir["entt"] = "%{wks.location}/Scotch/vendor/entt/include"
 IncludeDir["yaml"] = "%{wks.location}/Scotch/vendor/yaml-cpp/include"
+IncludeDir["ImGuizmo"] = "%{wks.location}/Scotch/vendor/ImGuizmo"
 
 group "Dependencies"
     include "Scotch/vendor/GLFW"

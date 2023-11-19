@@ -11,6 +11,7 @@ namespace Scotch
 		SceneHierarchyPanel(const Ref<Scene>& scene);
 
 		void SetContext(const Ref<Scene>& scene);
+		Entity GetSelectedEntity() const { return m_SelectedContext; }
 
 		void OnImGuiRender();
 

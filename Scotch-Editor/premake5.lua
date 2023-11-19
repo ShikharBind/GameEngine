@@ -19,7 +19,8 @@ project "Scotch-Editor"
         "%{wks.location}/Scotch/src",
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}",
-        "%{IncludeDir.entt}"
+        "%{IncludeDir.entt}",
+        "%{IncludeDir.ImGuizmo}",
     }
 
     links 

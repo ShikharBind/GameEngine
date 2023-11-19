@@ -3,6 +3,8 @@
 #include <Scotch.h>
 #include "Panels/SceneHierarchyPanel.h"
 
+#include "Scotch/Renderer/EditorCamera.h"
+
 namespace Scotch {
 
 	class EditorLayer : public Layer
@@ -32,9 +34,15 @@ namespace Scotch {
 		Ref<Scene> m_ActiveScene;
 		std::string m_ActiveSceneFilepath = std::string();
 
+		EditorCamera m_EditorCamera;
+
 		// View Port
-		glm::vec2 m_ViewportSize = {0, 0};
+		glm::vec2 m_ViewportSize = {0, 0}; 
+		glm::vec2 m_ViewportBounds[2];
 		bool m_ViewportFocused = false, m_ViewportHovered = false;
+
+		//Gizmo
+		int m_GizmoType = -1;
 
 		//Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;

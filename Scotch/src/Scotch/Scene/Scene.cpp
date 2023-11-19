@@ -29,7 +29,20 @@ namespace Scotch
 	{
 		m_Registry.destroy(entity);
 	}
-	void Scene::OnUpdate(TimeStep ts)
+	void Scene::OnUpdateEditor(TimeStep ts, EditorCamera& camera)
+	{
+		Renderer2D::BeginScene(camera);
+
+		auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+		for (auto entity : group)
+		{
+			auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+			Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+		}
+
+		Renderer2D::EndScene();
+	}
+	void Scene::OnUpdateRuntime(TimeStep ts)
 	{
 		//Update Scripts
 		{
@@ -48,24 +61,11 @@ namespace Scotch
 		}
 
 		// Render 2D
-		Camera* mainCamera = nullptr;
-		glm::mat4 cameraTransform;
-		{
-			auto view = m_Registry.view<TransformComponent, CameraComponent>();
-			for (auto entity : view)
-			{
-				auto& [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
+		auto mainCameraEntity = GetPrimaryCamera();
+		Camera* mainCamera = &mainCameraEntity.GetComponent<CameraComponent>().Camera;
+		glm::mat4 cameraTransform = mainCameraEntity.GetComponent<TransformComponent>().GetTransform();
 
-				if (camera.Primary)
-				{
-					mainCamera = &camera.Camera;
-					cameraTransform = transform.GetTransform();
-					break;
-				}
-			}
-		}
-
-		if (mainCamera)
+		if (mainCameraEntity)
 		{
 			Renderer2D::BeginScene(mainCamera->GetProjection(), cameraTransform);
 
@@ -94,6 +94,19 @@ namespace Scotch
 				cameraComponent.Camera.SetViewportSize(width, height);
 			}
 		}
+	}
+
+	Entity Scene::GetPrimaryCamera()
+	{
+		auto view = m_Registry.view<CameraComponent>();
+		for (auto entity : view)
+		{
+			const auto& camera = view.get<CameraComponent>(entity);
+			if (camera.Primary)
+				return Entity{ entity, this };
+		}
+
+		return Entity();
 	}
 
 	template<typename T>

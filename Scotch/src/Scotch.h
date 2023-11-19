@@ -10,7 +10,7 @@
 
 #include "Scotch/Core/Input.h"
 #include "Scotch/Core/KeyCodes.h"
-#include "Scotch/Core/MouseButtonCodes.h"
+#include "Scotch/Core/MouseCodes.h"
 #include "Scotch/Renderer/CameraController.h"
 
 #include "Scotch/ImGui/ImGuiLayer.h"

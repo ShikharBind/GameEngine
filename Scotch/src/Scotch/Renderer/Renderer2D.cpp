@@ -125,10 +125,20 @@ namespace Scotch {
 		s_Data.DefaultShader->Bind();
 		s_Data.DefaultShader->SetMat4("u_ViewProjection", viewProj);
 
-		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-		s_Data.TextureSlotIndex = 1;
+		StartBatch();
 	}
+	void Renderer2D::BeginScene(EditorCamera& camera)
+	{
+		SH_PROFILE_FUNCTION();
+
+		glm::mat4 viewProj = camera.GetViewProjection();
+
+		s_Data.DefaultShader->Bind();
+		s_Data.DefaultShader->SetMat4("u_ViewProjection", viewProj);
+
+		StartBatch();
+	}
+
 	void Renderer2D::BeginScene(OrthographicCamera& camera)
 	{
 		SH_PROFILE_FUNCTION();
@@ -136,9 +146,7 @@ namespace Scotch {
 		s_Data.DefaultShader->Bind();
 		s_Data.DefaultShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 
-		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-		s_Data.TextureSlotIndex = 1;
+		StartBatch();
 	}
 	void Renderer2D::EndScene()
 	{
@@ -160,13 +168,17 @@ namespace Scotch {
 		s_Data.Stats.DrawCalls++;
 	}
 
-	void Renderer2D::FlushAndReset()
+	void Renderer2D::StartBatch()
 	{
-		EndScene();
-
 		s_Data.QuadIndexCount = 0;
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
 		s_Data.TextureSlotIndex = 1;
+	}
+
+	void Renderer2D::FlushAndReset()
+	{
+		EndScene();
+		StartBatch();
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color)

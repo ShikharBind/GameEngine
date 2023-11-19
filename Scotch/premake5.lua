@@ -18,6 +18,8 @@ project "Scotch"
         "vendor/stb_image/**.cpp",
 		"vendor/glm/glm/**.hpp",
 		"vendor/glm/glm/**.inl",
+        "vendor/ImGuizmo/ImGuizmo.h",
+        "vendor/ImGuizmo/ImGuizmo.cpp"
     }
 
     defines
@@ -37,6 +39,7 @@ project "Scotch"
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.entt}",
         "%{IncludeDir.yaml}",
+        "%{IncludeDir.ImGuizmo}",
     }
 
     links
@@ -47,6 +50,9 @@ project "Scotch"
         "yaml-cpp",
         "opengl32.lib",
     }
+
+    filter "files:vendor/ImGuizmo/**.cpp"
+        flags {"NoPCH"}
 
     filter "system:windows"
         systemversion "latest"
