@@ -12,6 +12,7 @@ namespace Scotch
 
 		void SetContext(const Ref<Scene>& scene);
 		Entity GetSelectedEntity() const { return m_SelectedContext; }
+		void SetSelectedEntity(Entity entity);
 
 		void OnImGuiRender();
 

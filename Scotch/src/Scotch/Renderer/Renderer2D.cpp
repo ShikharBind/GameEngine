@@ -15,6 +15,9 @@ namespace Scotch {
 		glm::vec2 TexCoord;
 		float TexIndex;
 		float TilingFactor;
+
+		//Edito-only
+		int EntityID;
 	};
 
 	struct Renderer2DData
@@ -56,7 +59,8 @@ namespace Scotch {
 			{ShaderDataType::Float4, "a_Color"},
 			{ShaderDataType::Float2, "a_TexCoord"},
 			{ShaderDataType::Float, "a_TexIndex"},
-			{ShaderDataType::Float, "a_TilingFactor"}
+			{ShaderDataType::Float, "a_TilingFactor"},
+			{ShaderDataType::Int, "a_EntityID"}
 		});
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVerteBuffer);
 
@@ -190,7 +194,7 @@ namespace Scotch {
 		glm::mat4 transform = CalculateTransform(position, rotation, scale);
 		DrawQuad(transform, color);
 	}
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, int entityID)
 	{
 		SH_PROFILE_FUNCTION();
 
@@ -200,7 +204,7 @@ namespace Scotch {
 		const float textureIndex = 0.0f;
 		const float tilingFactor = 1.0f;
 
-		AddQuadToVB(transform, color, s_Data.QuadVertexTexCoords, textureIndex, tilingFactor);
+		AddQuadToVB(transform, color, s_Data.QuadVertexTexCoords, textureIndex, tilingFactor, entityID);
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const Ref<Texture2D> texture, float tilingFactor, const glm::vec4& color)
@@ -212,7 +216,7 @@ namespace Scotch {
 		glm::mat4 transform = CalculateTransform(position, rotation, scale);
 		DrawQuad(transform, texture, tilingFactor, color);
 	}
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D> texture, float tilingFactor, const glm::vec4& color)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D> texture, float tilingFactor, const glm::vec4& color, int entityID)
 	{
 		SH_PROFILE_FUNCTION();
 
@@ -236,7 +240,7 @@ namespace Scotch {
 			s_Data.TextureSlots[s_Data.TextureSlotIndex++] = texture;
 		}
 
-		AddQuadToVB(transform, color, s_Data.QuadVertexTexCoords, textureIndex, tilingFactor);
+		AddQuadToVB(transform, color, s_Data.QuadVertexTexCoords, textureIndex, tilingFactor, entityID);
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const Ref<SubTexture2D> subtexture, float tilingFactor, const glm::vec4& color)
@@ -248,7 +252,7 @@ namespace Scotch {
 		glm::mat4 transform = CalculateTransform(position, rotation, scale);
 		DrawQuad(transform, subtexture, tilingFactor, color);
 	}
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<SubTexture2D> subtexture, float tilingFactor, const glm::vec4& color)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<SubTexture2D> subtexture, float tilingFactor, const glm::vec4& color, int entityID)
 	{
 		SH_PROFILE_FUNCTION();
 
@@ -275,7 +279,12 @@ namespace Scotch {
 			s_Data.TextureSlots[s_Data.TextureSlotIndex++] = texture;
 		}
 
-		AddQuadToVB(transform, color, textureCoords, textureIndex, tilingFactor);
+		AddQuadToVB(transform, color, textureCoords, textureIndex, tilingFactor, entityID);
+	}
+
+	void Renderer2D::DrawSprites(const glm::mat4& transform, SpriteRendererComponent& src, int entityID)
+	{
+		DrawQuad(transform, src.Color, entityID);
 	}
 
 	glm::mat4 Renderer2D::CalculateTransform(const glm::vec3& position, float rotation, const glm::vec2& scale)
@@ -299,7 +308,7 @@ namespace Scotch {
 		return transform;
 	}
 
-	void Renderer2D::AddQuadToVB(const glm::mat4& transform, const glm::vec4& color, const glm::vec2* texCoords, float textureIndex, float tilingFactor)
+	void Renderer2D::AddQuadToVB(const glm::mat4& transform, const glm::vec4& color, const glm::vec2* texCoords, float textureIndex, float tilingFactor, int entityID)
 	{
 		SH_PROFILE_FUNCTION();
 
@@ -312,6 +321,7 @@ namespace Scotch {
 			s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+			s_Data.QuadVertexBufferPtr->EntityID = entityID;
 			s_Data.QuadVertexBufferPtr++;
 		}
 

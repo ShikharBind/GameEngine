@@ -76,6 +76,20 @@ namespace Scotch {
 
 			return false;
 		}
+
+		static GLenum ScotchFBTextureFormatToGL(const FramebufferTextureFormat format)
+		{
+			switch (format)
+			{
+				case FramebufferTextureFormat::RGBA8:
+					return GL_RGBA8;
+				case FramebufferTextureFormat::RED_INTEGER:
+					return GL_RED_INTEGER;
+			}
+
+			SH_CORE_ASSERT(false, "");
+			return 0;
+		}
 	}
 
 	OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpecification& spec)
@@ -127,6 +141,14 @@ namespace Scotch {
 		int pixelData;
 		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
 		return pixelData;
+	}
+	void OpenGLFrameBuffer::ClearAttachment(uint32_t attachmentIndex, int value)
+	{
+		SH_CORE_ASSERT(attachmentIndex <= m_ColorAttachments.size(), "Framebuffer index out of bound!");
+
+		auto& spec = m_ColorAttachmentSpecs[attachmentIndex];
+		glClearTexImage(m_ColorAttachments[attachmentIndex], 0, 
+			Utils::ScotchFBTextureFormatToGL(spec.TextureFormat), GL_INT, &value);
 	}
 	void OpenGLFrameBuffer::Invalidate()
 	{

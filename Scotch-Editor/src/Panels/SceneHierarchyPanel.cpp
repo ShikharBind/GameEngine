@@ -15,6 +15,10 @@ namespace Scotch
 		m_Context = context;
 		m_SelectedContext = {};
 	}
+	void SceneHierarchyPanel::SetSelectedEntity(Entity entity)
+	{
+		m_SelectedContext = entity;
+	}
 	void SceneHierarchyPanel::OnImGuiRender()
 	{
 		ImGui::Begin("Scene Hierarchy");

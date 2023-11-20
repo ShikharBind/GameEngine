@@ -119,6 +119,9 @@ namespace Scotch {
         RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
         RenderCommand::Clear();
 
+        // Clear entityID attachment to -1
+        m_FrameBuffer->ClearAttachment(1, -1);
+
         // Update scene
         m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 
@@ -134,7 +137,7 @@ namespace Scotch {
         if (mouseX >= 0 && mouseY >= 0 && mouseX <= (int)viewportSize.x && mouseY <= (int)viewportSize.y)
         {
             int pixeldata = m_FrameBuffer->ReadPixel(1, mouseX, mouseY);
-            // SH_CORE_WARN("Mouese = {0}", pixeldata);
+            m_HoveredEntity = pixeldata == -1 ? Entity() : Entity{(entt::entity)pixeldata, m_ActiveScene.get()};
         }
 
         //{
@@ -254,6 +257,11 @@ namespace Scotch {
 
         ImGui::Begin("Renderer2D Stats");
 
+        std::string name = "None";
+        if (m_HoveredEntity)
+            name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
+        ImGui::Text("Hovered Entity: %s", name.c_str());
+
         auto stats = Renderer2D::GetStats();
 
         ImGui::Text("Draw calls: %d", stats.DrawCalls);
@@ -348,10 +356,11 @@ namespace Scotch {
         m_CameraController.OnEvent(e);
 
         EventDispatcher dispatcher(e);
-        dispatcher.Dispatch<KeyPressedEvent>(SH_BIND_EVENT_FN(EditorLayer::OnKeyPressedEvent));
+        dispatcher.Dispatch<KeyPressedEvent>(SH_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+        dispatcher.Dispatch<MouseButtonPressedEvent>(SH_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
     }
 
-    bool EditorLayer::OnKeyPressedEvent(KeyPressedEvent e)
+    bool EditorLayer::OnKeyPressed(KeyPressedEvent e)
     {
         //Shortcuts
         if (e.GetRepeatCount() > 0)
@@ -398,6 +407,16 @@ namespace Scotch {
                 m_GizmoType = ImGuizmo::OPERATION::ROTATE;
                 break;
         }
+    }
+
+    bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent e)
+    {
+        if (e.GetMouseButton() == Mouse::ButtonLeft)
+        {
+            if (m_ViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt)) // conditions for can mouse pick
+                m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
+        }
+        return false;
     }
 
     void EditorLayer::NewScene()

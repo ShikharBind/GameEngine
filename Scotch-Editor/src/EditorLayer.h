@@ -21,7 +21,8 @@ namespace Scotch {
 		void OnEvent(Event& e) override;
 
 	private:
-		bool OnKeyPressedEvent(KeyPressedEvent e);
+		bool OnKeyPressed(KeyPressedEvent e);
+		bool OnMouseButtonPressed(MouseButtonPressedEvent e);
 
 		void NewScene();
 		void LoadScene();
@@ -46,6 +47,9 @@ namespace Scotch {
 
 		//Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
+
+
+		Entity m_HoveredEntity;
 
 		// Temp
 		Ref<Texture2D> m_Texture, m_SpriteSheet, m_Logo;
