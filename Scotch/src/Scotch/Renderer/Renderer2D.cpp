@@ -118,7 +118,9 @@ namespace Scotch {
 	{
 		SH_PROFILE_FUNCTION();
 
-		// delete s_Data;
+		delete[] s_Data.QuadVertexBufferBase;
+		// Release every static GPU reference while the application context is alive.
+		s_Data = Renderer2DData{};
 	}
 	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)
 	{
@@ -156,17 +158,24 @@ namespace Scotch {
 	{
 		SH_PROFILE_FUNCTION();
 
-		uint32_t dataSize = (uint32_t)s_Data.QuadVertexBufferPtr - (uint32_t)s_Data.QuadVertexBufferBase;
+		uint32_t dataSize = static_cast<uint32_t>(
+			reinterpret_cast<const uint8_t*>(s_Data.QuadVertexBufferPtr) -
+			reinterpret_cast<const uint8_t*>(s_Data.QuadVertexBufferBase));
 		s_Data.QuadVerteBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
 
 		Flush();
 	}
 	void Renderer2D::Flush()
 	{
+		if (s_Data.QuadIndexCount == 0)
+			return;
+
 		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
 		{
 			s_Data.TextureSlots[i]->Bind(i);
 		}
+		s_Data.DefaultShader->Bind();
+		s_Data.QuadVertexArray->Bind();
 		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
 
 		s_Data.Stats.DrawCalls++;
@@ -236,6 +245,9 @@ namespace Scotch {
 
 		if (textureIndex == 0.0f)
 		{
+			if (s_Data.TextureSlotIndex >= Renderer2DData::MaxTextureSlots)
+				FlushAndReset();
+
 			textureIndex = (float)s_Data.TextureSlotIndex;
 			s_Data.TextureSlots[s_Data.TextureSlotIndex++] = texture;
 		}
@@ -275,6 +287,9 @@ namespace Scotch {
 
 		if (textureIndex == 0.0f)
 		{
+			if (s_Data.TextureSlotIndex >= Renderer2DData::MaxTextureSlots)
+				FlushAndReset();
+
 			textureIndex = (float)s_Data.TextureSlotIndex;
 			s_Data.TextureSlots[s_Data.TextureSlotIndex++] = texture;
 		}

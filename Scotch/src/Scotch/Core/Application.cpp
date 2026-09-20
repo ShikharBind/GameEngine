@@ -30,7 +30,17 @@ namespace Scotch {
 		PushOverlay(m_ImGuiLayer);
 	}
 
-	Application::~Application() { }
+	Application::~Application()
+	{
+		// Layers and renderer resources need a live OpenGL context during teardown.
+		glfwMakeContextCurrent(static_cast<GLFWwindow*>(m_Window->GetNativeWindow()));
+		m_LayerStack.Clear();
+		m_ImGuiLayer = nullptr;
+		glfwMakeContextCurrent(static_cast<GLFWwindow*>(m_Window->GetNativeWindow()));
+		Renderer::Shutdown();
+		m_Window.reset();
+		s_Instance = nullptr;
+	}
 
 	void Application::PushLayer(Layer* layer)
 	{

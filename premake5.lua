@@ -27,6 +27,22 @@ group "Dependencies"
     include "Scotch/vendor/Glad"
     include "Scotch/vendor/imgui"
     include "Scotch/vendor/yaml-cpp"
+
+    -- Apply the engine's CRT/configuration policy without patching submodule build files.
+    for _, dependency in ipairs({ "GLFW", "Glad", "ImGui", "yaml-cpp" }) do
+        project(dependency)
+        filter {}
+        staticruntime "off"
+        filter "configurations:Debug"
+            runtime "Debug"
+            symbols "on"
+        filter "configurations:Release or Dist"
+            runtime "Release"
+            optimize "on"
+        filter "configurations:Dist"
+            symbols "off"
+        filter {}
+    end
 group ""
 
 

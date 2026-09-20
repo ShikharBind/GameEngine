@@ -48,6 +48,8 @@ namespace Scotch
 
 		// Sets the default extension by extracting it from the filter
 		ofn.lpstrDefExt = strchr(filter, '\0') + 1;
+		if (ofn.lpstrDefExt[0] == '*' && ofn.lpstrDefExt[1] == '.')
+			ofn.lpstrDefExt += 2;
 
 		if (GetSaveFileNameA(&ofn) == TRUE)
 			return ofn.lpstrFile;

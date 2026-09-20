@@ -39,7 +39,7 @@ namespace Scotch {
 
 		// View Port
 		glm::vec2 m_ViewportSize = {0, 0}; 
-		glm::vec2 m_ViewportBounds[2];
+		glm::vec2 m_ViewportBounds[2] = { { 0.0f, 0.0f }, { 0.0f, 0.0f } };
 		bool m_ViewportFocused = false, m_ViewportHovered = false;
 
 		//Gizmo

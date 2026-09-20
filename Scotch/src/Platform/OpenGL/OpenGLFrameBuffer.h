@@ -13,7 +13,7 @@ namespace Scotch {
 		virtual const FrameBufferSpecification& GetSpecification() const override { return m_Specification; }
 		virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const override 
 		{
-			SH_CORE_ASSERT(index <= m_ColorAttachments.size(), "Framebuffer index out of bound!");
+			SH_CORE_ASSERT(index < m_ColorAttachments.size(), "Framebuffer index out of bound!");
 			return m_ColorAttachments[index]; 
 		}
 		virtual void Bind() override;
@@ -28,7 +28,7 @@ namespace Scotch {
 
 
 	private:
-		uint32_t m_RendererID;
+		uint32_t m_RendererID = 0;
 		FrameBufferSpecification m_Specification;
 
 		std::vector<FramebufferTextureSpecification> m_ColorAttachmentSpecs;

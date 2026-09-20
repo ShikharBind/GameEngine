@@ -29,14 +29,14 @@ namespace Scotch {
 		virtual void Init(const WindowProps& props);
 		virtual void Shutdown();
 
-		GLFWwindow* m_Window;
-		GraphicsContext* m_Context;
+		GLFWwindow* m_Window = nullptr;
+		Scope<GraphicsContext> m_Context;
 
 		struct WindowData
 		{
 			std::string Title;
 			unsigned int Width, Height;
-			bool VSync;
+			bool VSync = false;
 
 			EventCallbackFn EventCallback;
 		};

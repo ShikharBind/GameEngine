@@ -135,16 +135,19 @@ namespace Scotch {
 	}
 	int OpenGLFrameBuffer::ReadPixel(uint32_t attachmentIndex, int x, int y)
 	{
-		SH_CORE_ASSERT(attachmentIndex <= m_ColorAttachments.size(), "Framebuffer index out of bound!");
+		SH_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size(), "Framebuffer index out of bound!");
+		if (attachmentIndex >= m_ColorAttachments.size() || x < 0 || y < 0 ||
+			x >= (int)m_Specification.Width || y >= (int)m_Specification.Height)
+			return -1;
 
 		glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
-		int pixelData;
+		int pixelData = -1;
 		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
 		return pixelData;
 	}
 	void OpenGLFrameBuffer::ClearAttachment(uint32_t attachmentIndex, int value)
 	{
-		SH_CORE_ASSERT(attachmentIndex <= m_ColorAttachments.size(), "Framebuffer index out of bound!");
+		SH_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size(), "Framebuffer index out of bound!");
 
 		auto& spec = m_ColorAttachmentSpecs[attachmentIndex];
 		glClearTexImage(m_ColorAttachments[attachmentIndex], 0, 

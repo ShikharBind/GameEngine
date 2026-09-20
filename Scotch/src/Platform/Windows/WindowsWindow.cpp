@@ -7,9 +7,11 @@
 
 #include "Platform/OpenGL/OpenGLContext.h"
 
+#include <stdexcept>
+
 namespace Scotch {
 
-	static uint8_t s_GLFWWindowCount = 0;
+	static uint32_t s_GLFWWindowCount = 0;
 
 	static void GLFWErrorCallback(int error, const char* desription)
 	{
@@ -47,21 +49,40 @@ namespace Scotch {
 
 		if (s_GLFWWindowCount == 0)
 		{
-			// TODO: glfw terminate on system shutdown
 			SH_PROFILE_SCOPE("glfwInit");
-			int success = glfwInit();
-			SH_CORE_ASSERT(success, "Could not initialize GLFW!");
 			glfwSetErrorCallback(GLFWErrorCallback);
+			if (!glfwInit())
+				throw std::runtime_error("Could not initialize GLFW.");
 		}
+
+		// The renderer uses OpenGL 4.5 direct-state-access functions.
+		glfwDefaultWindowHints();
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		{
 			SH_PROFILE_SCOPE("glfwCreateWindow");
 			m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+			if (!m_Window)
+			{
+				if (s_GLFWWindowCount == 0)
+					glfwTerminate();
+				throw std::runtime_error("Could not create an OpenGL 4.5 core window. Check the graphics driver and GPU support.");
+			}
 			++s_GLFWWindowCount;
 		}
 
-		m_Context = new OpenGLContext(m_Window);
-		m_Context->Init();
+		try
+		{
+			m_Context = std::make_unique<OpenGLContext>(m_Window);
+			m_Context->Init();
+		}
+		catch (...)
+		{
+			Shutdown();
+			throw;
+		}
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
@@ -160,7 +181,14 @@ namespace Scotch {
 	{
 		SH_PROFILE_FUNCTION();
 
-		glfwDestroyWindow(m_Window);
+		m_Context.reset();
+		if (m_Window)
+		{
+			glfwDestroyWindow(m_Window);
+			m_Window = nullptr;
+			if (--s_GLFWWindowCount == 0)
+				glfwTerminate();
+		}
 	}
 
 	void WindowsWindow::OnUpdate()
@@ -179,6 +207,7 @@ namespace Scotch {
 			glfwSwapInterval(1);
 		else
 			glfwSwapInterval(0);
+		m_Data.VSync = enabled;
 	}
 
 	bool WindowsWindow::IsVSync() const

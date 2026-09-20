@@ -139,14 +139,14 @@ public:
 		// Update
 		m_CameraController.OnUpdate(ts);
 
-		if (Scotch::Input::IsKeyPressed(SH_KEY_J))
+		if (Scotch::Input::IsKeyPressed(Scotch::Key::J))
 			m_SquarePosition.x -= m_SquareMoveSpeed * ts;
-		else if (Scotch::Input::IsKeyPressed(SH_KEY_L))
+		else if (Scotch::Input::IsKeyPressed(Scotch::Key::L))
 			m_SquarePosition.x += m_SquareMoveSpeed * ts;
 
-		if (Scotch::Input::IsKeyPressed(SH_KEY_K))
+		if (Scotch::Input::IsKeyPressed(Scotch::Key::K))
 			m_SquarePosition.y -= m_SquareMoveSpeed * ts;
-		else if (Scotch::Input::IsKeyPressed(SH_KEY_I))
+		else if (Scotch::Input::IsKeyPressed(Scotch::Key::I))
 			m_SquarePosition.y += m_SquareMoveSpeed * ts;
 
 		// Render

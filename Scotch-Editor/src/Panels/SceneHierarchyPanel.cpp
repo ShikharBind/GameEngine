@@ -30,7 +30,7 @@ namespace Scotch
 				DrawEntityNode(entity);
 			});
 
-		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
+		if (ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered() && !ImGui::IsAnyItemHovered())
 			m_SelectedContext = {};
 
 		// Right click on blank space

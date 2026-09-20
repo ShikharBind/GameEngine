@@ -337,7 +337,7 @@ namespace Scotch
 	}
 
 
-	void SceneSerializer::Serialize(const std::string& filepath)
+	bool SceneSerializer::Serialize(const std::string& filepath)
 	{
 		YAML::Emitter out;
 		out << YAML::BeginMap;
@@ -354,8 +354,26 @@ namespace Scotch
 		out << YAML::EndSeq;
 		out << YAML::EndMap;
 
+		if (!out.good())
+		{
+			SH_CORE_ERROR("Failed to serialize scene '{0}': {1}", filepath, out.GetLastError());
+			return false;
+		}
+
 		std::ofstream fout(filepath);
+		if (!fout)
+		{
+			SH_CORE_ERROR("Failed to open scene file '{0}' for writing", filepath);
+			return false;
+		}
 		fout << out.c_str();
+		fout.close();
+		if (!fout)
+		{
+			SH_CORE_ERROR("Failed to write scene file '{0}'", filepath);
+			return false;
+		}
+		return true;
 	}
 	void SceneSerializer::SerializeRuntime(const std::string& filepath)
 	{
@@ -364,90 +382,96 @@ namespace Scotch
 	}
 	bool SceneSerializer::Deserialize(const std::string& filepath)
 	{
-		YAML::Node data;
 		try
 		{
-			data = YAML::LoadFile(filepath);
-		}
-		catch (YAML::ParserException e)
-		{
-			SH_CORE_ERROR("Failed to load .hazel file '{0}'\n     {1}", filepath, e.what());
-			return false;
-		}
-
-		if (!data["Scene"])
-			return false;
-
-		std::string sceneName = data["Scene"].as<std::string>();
-		SH_CORE_TRACE("Deserializing scene '{0}'", sceneName);
-
-		auto entities = data["Entities"];
-		if (entities)
-		{
-			for (auto entity : entities)
+			YAML::Node data = YAML::LoadFile(filepath);
+			if (!data.IsMap() || !data["Scene"])
 			{
-				uint64_t uuid = entity["Entity"].as<uint64_t>();
+				SH_CORE_ERROR("Failed to load scene '{0}': missing Scene entry", filepath);
+				return false;
+			}
 
-				std::string name;
-				auto tagComponent = entity["TagComponent"];
-				if (tagComponent)
-					name = tagComponent["Tag"].as<std::string>();
+			std::string sceneName = data["Scene"].as<std::string>();
+			SH_CORE_TRACE("Deserializing scene '{0}'", sceneName);
 
-				SH_CORE_TRACE("Deserialized entity with ID = {0}, name = {1}", uuid, name);
-
-				// Entity deserializedEntity = m_Scene->CreateEntityWithUUID(uuid, name);
-
-				Entity deserializedEntity = m_Scene->CreateEntity(name);
-
-				auto transformComponent = entity["TransformComponent"];
-				if (transformComponent)
+			auto entities = data["Entities"];
+			if (entities)
+			{
+				if (!entities.IsSequence())
 				{
-					// Entities always have transforms
-					auto& tc = deserializedEntity.GetComponent<TransformComponent>();
-					tc.Translation = transformComponent["Translation"].as<glm::vec3>();
-					tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
-					tc.Scale = transformComponent["Scale"].as<glm::vec3>();
+					SH_CORE_ERROR("Failed to load scene '{0}': Entities must be a sequence", filepath);
+					return false;
 				}
-
-				auto cameraComponent = entity["CameraComponent"];
-				if (cameraComponent)
+				for (auto entity : entities)
 				{
-					auto& cc = deserializedEntity.AddComponent<CameraComponent>();
+					uint64_t uuid = entity["Entity"].as<uint64_t>();
 
-					auto& cameraProps = cameraComponent["Camera"];
-					cc.Camera.SetProjectionType((SceneCamera::ProjectionType)cameraProps["ProjectionType"].as<int>());
+					std::string name;
+					auto tagComponent = entity["TagComponent"];
+					if (tagComponent)
+						name = tagComponent["Tag"].as<std::string>();
 
-					cc.Camera.SetPerspectiveVerticalFOV(cameraProps["PerspectiveFOV"].as<float>());
-					cc.Camera.SetPerspectiveNearClip(cameraProps["PerspectiveNear"].as<float>());
-					cc.Camera.SetPerspectiveFarClip(cameraProps["PerspectiveFar"].as<float>());
+					SH_CORE_TRACE("Deserialized entity with ID = {0}, name = {1}", uuid, name);
 
-					cc.Camera.SetOrthographicSize(cameraProps["OrthographicSize"].as<float>());
-					cc.Camera.SetOrthographicNearClip(cameraProps["OrthographicNear"].as<float>());
-					cc.Camera.SetOrthographicFarClip(cameraProps["OrthographicFar"].as<float>());
+					// Entity deserializedEntity = m_Scene->CreateEntityWithUUID(uuid, name);
 
-					cc.Primary = cameraComponent["Primary"].as<bool>();
-					cc.FixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
-				}
+					Entity deserializedEntity = m_Scene->CreateEntity(name);
 
-				auto spriteRendererComponent = entity["SpriteRendererComponent"];
-				if (spriteRendererComponent)
-				{
-					auto& src = deserializedEntity.AddComponent<SpriteRendererComponent>();
-					src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
-					/*if (spriteRendererComponent["TexturePath"])
+					auto transformComponent = entity["TransformComponent"];
+					if (transformComponent)
 					{
-						std::string texturePath = spriteRendererComponent["TexturePath"].as<std::string>();
-						auto path = Project::GetAssetFileSystemPath(texturePath);
-						src.Texture = Texture2D::Create(path.string());
+						// Entities always have transforms
+						auto& tc = deserializedEntity.GetComponent<TransformComponent>();
+						tc.Translation = transformComponent["Translation"].as<glm::vec3>();
+						tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
+						tc.Scale = transformComponent["Scale"].as<glm::vec3>();
 					}
 
-					if (spriteRendererComponent["TilingFactor"])
-						src.TilingFactor = spriteRendererComponent["TilingFactor"].as<float>();*/
+					auto cameraComponent = entity["CameraComponent"];
+					if (cameraComponent)
+					{
+						auto& cc = deserializedEntity.AddComponent<CameraComponent>();
+
+						auto& cameraProps = cameraComponent["Camera"];
+						cc.Camera.SetProjectionType((SceneCamera::ProjectionType)cameraProps["ProjectionType"].as<int>());
+
+						cc.Camera.SetPerspectiveVerticalFOV(cameraProps["PerspectiveFOV"].as<float>());
+						cc.Camera.SetPerspectiveNearClip(cameraProps["PerspectiveNear"].as<float>());
+						cc.Camera.SetPerspectiveFarClip(cameraProps["PerspectiveFar"].as<float>());
+
+						cc.Camera.SetOrthographicSize(cameraProps["OrthographicSize"].as<float>());
+						cc.Camera.SetOrthographicNearClip(cameraProps["OrthographicNear"].as<float>());
+						cc.Camera.SetOrthographicFarClip(cameraProps["OrthographicFar"].as<float>());
+
+						cc.Primary = cameraComponent["Primary"].as<bool>();
+						cc.FixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
+					}
+
+					auto spriteRendererComponent = entity["SpriteRendererComponent"];
+					if (spriteRendererComponent)
+					{
+						auto& src = deserializedEntity.AddComponent<SpriteRendererComponent>();
+						src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
+						/*if (spriteRendererComponent["TexturePath"])
+						{
+							std::string texturePath = spriteRendererComponent["TexturePath"].as<std::string>();
+							auto path = Project::GetAssetFileSystemPath(texturePath);
+							src.Texture = Texture2D::Create(path.string());
+						}
+
+						if (spriteRendererComponent["TilingFactor"])
+							src.TilingFactor = spriteRendererComponent["TilingFactor"].as<float>();*/
+					}
 				}
 			}
-		}
 
-		return true;
+			return true;
+		}
+		catch (const YAML::Exception& e)
+		{
+			SH_CORE_ERROR("Failed to load scene '{0}': {1}", filepath, e.what());
+			return false;
+		}
 	}
 	bool SceneSerializer::DeserializeRuntime(const std::string& filepath)
 	{

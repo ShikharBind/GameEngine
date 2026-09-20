@@ -13,6 +13,8 @@
 
 #include "ImGuizmo.h"
 
+#include <filesystem>
+
 namespace Scotch {
 
 	ImGuiLayer::ImGuiLayer()
@@ -32,10 +34,18 @@ namespace Scotch {
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+		// Viewport drags belong to selection/gizmos, not the containing window.
+		io.ConfigWindowsMoveFromTitleBarOnly = true;
 
-		float fontSize = 18.0f;// *2.0f;
-		io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Bold.ttf", fontSize);
-		io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Regular.ttf", fontSize);
+		const float fontSize = 18.0f;
+		const char* boldFont = "assets/fonts/opensans/OpenSans-Bold.ttf";
+		const char* regularFont = "assets/fonts/opensans/OpenSans-Regular.ttf";
+		if (std::filesystem::exists(boldFont))
+			io.Fonts->AddFontFromFileTTF(boldFont, fontSize);
+		if (std::filesystem::exists(regularFont))
+			io.FontDefault = io.Fonts->AddFontFromFileTTF(regularFont, fontSize);
+		else
+			io.FontDefault = io.Fonts->AddFontDefault();
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();

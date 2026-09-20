@@ -7,7 +7,7 @@
 
 namespace Scotch {
 
-	Renderer::SceneData* Renderer::m_SceneData = new Renderer::SceneData;
+	Renderer::SceneData Renderer::m_SceneData;
 
 	void Renderer::Init()
 	{
@@ -15,6 +15,11 @@ namespace Scotch {
 
 		RenderCommand::Init();
 		Renderer2D::Init();
+	}
+
+	void Renderer::Shutdown()
+	{
+		Renderer2D::ShutDown();
 	}
 
 	void Renderer::OnWindowResize(uint32_t width, uint32_t height)
@@ -26,7 +31,7 @@ namespace Scotch {
 	{
 		SH_PROFILE_FUNCTION();
 
-		m_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
+		m_SceneData.ViewProjectionMatrix = camera.GetViewProjectionMatrix();
 	}
 
 	void Renderer::EndScene()
@@ -39,7 +44,7 @@ namespace Scotch {
 		SH_PROFILE_FUNCTION();
 
 		shader->Bind();
-		shader->SetMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
+		shader->SetMat4("u_ViewProjection", m_SceneData.ViewProjectionMatrix);
 		shader->SetMat4("u_Transform", transform);
 
 		vertexArray->Bind();

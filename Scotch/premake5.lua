@@ -52,7 +52,9 @@ project "Scotch"
     }
 
     filter "files:vendor/ImGuizmo/**.cpp"
-        flags {"NoPCH"}
+        enablepch "Off"
+        -- The pinned ImGuizmo needs this defined before its first imgui.h include.
+        defines "IMGUI_DEFINE_MATH_OPERATORS"
 
     filter "system:windows"
         systemversion "latest"
